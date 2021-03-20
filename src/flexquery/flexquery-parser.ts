@@ -1,4 +1,4 @@
-import { TradeType } from '../model/trade';
+import { TradeType } from '../types/trade';
 
 export class FlexQueryParser {
     public async parse(fileData: string): Promise<TradeType[]> {
