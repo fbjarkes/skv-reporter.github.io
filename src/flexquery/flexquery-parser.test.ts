@@ -1,5 +1,6 @@
 import chai, { expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
+import { promises as fs } from 'fs';
 import { FlexQueryParser } from './flexquery-parser';
 
 chai.use(chaiAsPromised);
@@ -26,21 +27,21 @@ chai.use(chaiAsPromised);
 
 		// Buy 	1 ABC @ $500, 8 USD/SEK
 		// Sell 1 ABC @ $400, 8 USD/SEK
-		//
-		Statement one = statements.get(0);
-		assertEquals("1",one.getQuantity()+"");
-		assertEquals("ABC ", one.getTicker());
-		assertEquals("3200.0000", one.getReceieved()+"");
-		assertEquals("4000.0000", one.getPaid()+"");
-		assertEquals("-800.0000", one.getPnL()+"");
-
  */
 
 describe('FlexQueryParser', () => {
-    it('should parse FlexQuery XML file', async () => {
-        const parser = new FlexQueryParser();
-        const trades = await parser.parse('DATA');
+    const flexParser = new FlexQueryParser();
+
+    it('should parse single STK trade', async () => {
+        const testFileData = await fs.readFile('test/trade1.xml', 'utf8');
+        const trades = await flexParser.parse(testFileData);
+
         expect(trades[0]).to.not.be.undefined;
-        expect(trades[0].symbol).to.equal('SPY');
+        expect(trades[0].symbol).to.equal('ABC');
+        expect(trades[0].exitDate).to.equal('2015-03-27');
+        expect(trades[0].securityType).to.equal('STK');
+        expect(trades[0].quantity).to.equal(1.0);
+        expect(trades[0].exitPrice).to.equal(400.0);
+        expect(trades[0].pnl).to.equal(-100.0);
     });
 });

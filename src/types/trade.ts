@@ -5,5 +5,6 @@ export class TradeType {
     quantity?: number;
     entryPrice?: number;
     exitPrice?: number;
+    pnl?: number;
     securityType?: string;
 }
