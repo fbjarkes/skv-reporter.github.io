@@ -1,10 +1,17 @@
 export class TradeType {
-    entryDate?: string;
-    exitDate?: string;
+    entryDateTime?: string;
+    exitDateTime?: string;
     symbol?: string;
+    description?: string;
     quantity?: number;
     entryPrice?: number;
     exitPrice?: number;
     pnl?: number;
     securityType?: string;
+    currency?: string;
+    proceeds?: number;
+    cost?: number; // Does not include commission
+    direction?: string;
+    commission?: number;
+    transactionType?: string;
 }
