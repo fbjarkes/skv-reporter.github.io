@@ -1,0 +1,21 @@
+<FlexQueryResponse queryName="Simple 1" type="AF">
+<FlexStatements count="1">
+<FlexStatement accountId="U1234567" fromDate="20150203" toDate="20150206" period="" whenGenerated="20150207 04:04:49">
+<Trades>
+
+
+<Trade currency="USD" assetCategory="STK" fxRateToBase="1" symbol="BA" description="BOEING CO/THE" reportDate="20150330" tradeDate="20150330" tradeTime="155336" transactionType="ExchTrade" quantity="-100" tradePrice="152.7" proceeds="15270" ibCommission="-0.963125" ibCommissionCurrency="USD" closePrice="152.7" fifoPnlRealized="0" buySell="SELL" cost="-15269.036875" openCloseIndicator="O" openDateTime="--" />
+<Trade currency="USD" assetCategory="STK" fxRateToBase="1" symbol="BA" description="BOEING CO/THE" reportDate="20150331" tradeDate="20150330" tradeTime="162000" transactionType="BookTrade" quantity="100" tradePrice="144" proceeds="-14400" ibCommission="0" ibCommissionCurrency="USD" closePrice="150.08" fifoPnlRealized="316.946875" buySell="BUY" cost="15269.036875" openCloseIndicator="C" openDateTime="--" />
+
+<Trade currency="USD" assetCategory="OPT" fxRateToBase="1" symbol="BA    150417C00144000" description="BA 17APR15 144.0 C" reportDate="20150326" tradeDate="20150326" tradeTime="155801" transactionType="ExchTrade" quantity="1" tradePrice="5.51" proceeds="-551" ibCommission="-1.09" ibCommissionCurrency="USD" closePrice="5.5" fifoPnlRealized="0" buySell="BUY" cost="552.09" openCloseIndicator="O" openDateTime="--" />
+<Trade currency="USD" assetCategory="OPT" fxRateToBase="1" symbol="BA    150417C00144000" description="BA 17APR15 144.0 C" reportDate="20150331" tradeDate="20150330" tradeTime="162000" transactionType="BookTrade" quantity="-1" tradePrice="0" proceeds="-0" ibCommission="0" ibCommissionCurrency="USD" closePrice="6.8644" fifoPnlRealized="0" buySell="SELL" cost="-552.09" openCloseIndicator="C" openDateTime="--" />
+
+</Trades>
+<ConversionRates>
+	<ConversionRate acctAlias="--" reportDate="20150330" fromCurrency="SEK" toCurrency="USD" rate="0.15421" />
+	<ConversionRate acctAlias="--" reportDate="20150331" fromCurrency="SEK" toCurrency="USD" rate="0.15421" />
+</ConversionRates>
+
+</FlexStatement>
+</FlexStatements>
+</FlexQueryResponse>

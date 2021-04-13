@@ -40,4 +40,17 @@ describe('FlexQueryParser', () => {
         expect(trades[0].direction).to.equal('LONG');
         expect(trades[0].transactionType).to.equal('ExchTrade');
     });
+
+    it('should handle exercised stock option', async () => {
+        const testFileData = await fs.readFile('test/fixtures/option_exercised.xml', 'utf8');
+        const trades = await flexParser.parse(testFileData);
+        expect(trades).to.have.lengthOf(2);
+        expect(trades[0].symbol).to.equal('BA');
+        expect(trades[0].securityType).to.equal('STK');
+        expect(trades[0].transactionType).to.equal('BookTrade');
+        expect(trades[0].pnl).to.equal(316.946875);
+        expect(trades[1].symbol).to.equal('BA    150417C00144000');
+        expect(trades[1].securityType).to.equal('OPT');
+        expect(trades[1].transactionType).to.equal('BookTrade');
+    });
 });
