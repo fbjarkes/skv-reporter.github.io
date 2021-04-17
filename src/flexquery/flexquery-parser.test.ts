@@ -7,7 +7,11 @@ import { FlexQueryParser } from './flexquery-parser';
 chai.use(chaiAsPromised);
 
 describe('FlexQueryParser', () => {
-    const flexParser = new FlexQueryParser();
+    let flexParser: FlexQueryParser;
+
+	beforeEach(() => {
+		flexParser = new FlexQueryParser();
+	});
 
     it('should parse single STK trade', async () => {
         const testFileData = await fs.readFile('test/fixtures/trade1.xml', 'utf8');
@@ -25,7 +29,8 @@ describe('FlexQueryParser', () => {
     it('should get all data for a STK trade', async () => {
         const testFileData = await fs.readFile('test/fixtures/trade2.xml', 'utf8');
         const trades = flexParser.parse(testFileData);
-        expect(trades).to.have.lengthOf(2);
+		expect(trades).to.have.lengthOf(2);
+		
         expect(trades[0].symbol).to.equal('UWM');
         expect(trades[0].description).to.equal('PROSHARES ULTRA RUSSELL2000');
         expect(trades[0].quantity).to.equal(32);
