@@ -12,8 +12,9 @@
 
 </Trades>
 <ConversionRates>
-	<ConversionRate acctAlias="--" reportDate="20150330" fromCurrency="SEK" toCurrency="USD" rate="0.15421" />
+	<ConversionRate acctAlias="--" reportDate="20150330" fromCurrency="SEK" toCurrency="USD" rate="0.15420" />
 	<ConversionRate acctAlias="--" reportDate="20150331" fromCurrency="SEK" toCurrency="USD" rate="0.15421" />
+	<ConversionRate acctAlias="--" reportDate="20150331" fromCurrency="EUR" toCurrency="USD" rate="1.3634" />
 </ConversionRates>
 
 </FlexStatement>

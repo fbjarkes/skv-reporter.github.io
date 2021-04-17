@@ -4,8 +4,10 @@ import parse from 'date-fns/parse';
 import parser from 'fast-xml-parser';
 import { TradeType } from '../types/trade';
 
-const FQ_FORMAT = 'yyyyMMdd HHmmss'; // TODO: To be configurable in .env?
-const DT_FORMAT = 'yyyy-MM-dd HH:mm';
+const FQ_DATETIME_FORMAT = 'yyyyMMdd HHmmss'; // TODO: To be configurable in .env?
+const FQ_DATE_FORMAT = 'yyyyMMdd';
+const DATETIME_FORMAT = 'yyyy-MM-dd HH:mm';
+const DATE_FORMAT = 'yyyy-MM-dd';
 
 interface FQTrade {
     _accountId: string;
@@ -36,6 +38,13 @@ interface FQTrade {
     _exchange: string;
 }
 
+interface FQRate {
+    _reportDate: string;
+    _fromCurrency: string;
+    _toCurrency: string;
+    _rate: number;
+}
+
 export class FlexQueryParser {
     options = {
         attributeNamePrefix: '_',
@@ -44,25 +53,27 @@ export class FlexQueryParser {
         parseAttributeValue: false,
     };
 
+    private rates: Map<string, Map<string, number>> = new Map();
+    private trades: TradeType[] = [];
+    private openTradesMap: Map<string, TradeType> = new Map(); //TODO: use TradeType for tracking open trades?
+
     toDateString(tradeDate: string, tradeTime: string): string {
         // TODO: default to 'New_York/America' tz?
         const t = tradeDate + ' ' + tradeTime;
-        const dt = parse(t, FQ_FORMAT, new Date());
-        //const dt = parse(toParse, 'yyyy-MM-dd HH:mm:ss', new Date());
-
-        // const d = new Date(
-        //     `${tradeDate.substring(0, 4)}-${tradeDate.substring(4, 6)}-${tradeDate.substring(
-        //         6,
-        //         8,
-        //     )} ${tradeTime.substring(0, 2)}:${tradeTime.substring(2, 4)}:${tradeTime.substring(4, 6)}`,
-        // );
-        // return d.toISOString().substring(0, 10);
-        const str = format(dt, DT_FORMAT);
+        const dt = parse(t, FQ_DATETIME_FORMAT, new Date());
+        const str = format(dt, DATETIME_FORMAT);
         return str;
     }
 
-    public async parse(fileData: string): Promise<TradeType[]> {
-        const trades: TradeType[] = [];
+    public getClosingTrades(): TradeType[] {
+        return [];
+    }
+
+    public getConversionRates(): Map<string, Map<string, number>> {
+        return this.rates;
+    }
+
+    public parse(fileData: string): TradeType[] {
         const xmlData = parser.parse(fileData, this.options);
 
         if (xmlData.FlexQueryResponse.FlexStatements.FlexStatement.Trades.Trade) {
@@ -83,10 +94,32 @@ export class FlexQueryParser {
                     t.commission = Number(item._ibCommission);
                     t.currency = item._currency;
                     t.transactionType = item._transactionType;
-                    trades.push(t);
+                    this.trades.push(t);
                 }
             });
         }
-        return trades;
+
+        if (xmlData.FlexQueryResponse.FlexStatements.FlexStatement.ConversionRates) {
+            xmlData.FlexQueryResponse.FlexStatements.FlexStatement.ConversionRates.ConversionRate.forEach(
+                (item: FQRate) => {
+                    const dateString = format(parse(item._reportDate, FQ_DATE_FORMAT, new Date()), DATE_FORMAT);
+                    if (this.rates.has(dateString)) {
+                        this.rates
+                            .get(dateString)
+                            ?.set(`${item._fromCurrency}/${item._toCurrency}`, Number(item._rate));
+                    } else {
+                        const pairs = new Map();
+                        pairs.set(`${item._fromCurrency}/${item._toCurrency}`, Number(item._rate));
+                        this.rates.set(dateString, pairs);
+                    }
+                },
+            );
+            // TODO: add CUR/SEK for all rates
+            // CAD/SEK = 0.15SEK/1USD * 1USD/0.8CAD
+            // EUR/SEK = 0.15SEK/1USD * 1USD/1.36EUR
+            //this.convertPairs(this.rates);
+        }
+
+        return this.trades;
     }
 }

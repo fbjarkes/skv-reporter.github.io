@@ -11,7 +11,7 @@ describe('FlexQueryParser', () => {
 
     it('should parse single STK trade', async () => {
         const testFileData = await fs.readFile('test/fixtures/trade1.xml', 'utf8');
-        const trades = await flexParser.parse(testFileData);
+        const trades = flexParser.parse(testFileData);
 
         expect(trades[0]).to.not.be.undefined;
         expect(trades[0].symbol).to.equal('ABC');
@@ -24,7 +24,7 @@ describe('FlexQueryParser', () => {
 
     it('should get all data for a STK trade', async () => {
         const testFileData = await fs.readFile('test/fixtures/trade2.xml', 'utf8');
-        const trades = await flexParser.parse(testFileData);
+        const trades = flexParser.parse(testFileData);
         expect(trades).to.have.lengthOf(2);
         expect(trades[0].symbol).to.equal('UWM');
         expect(trades[0].description).to.equal('PROSHARES ULTRA RUSSELL2000');
@@ -43,7 +43,7 @@ describe('FlexQueryParser', () => {
 
     it('should handle exercised stock option', async () => {
         const testFileData = await fs.readFile('test/fixtures/option_exercised.xml', 'utf8');
-        const trades = await flexParser.parse(testFileData);
+        const trades = flexParser.parse(testFileData);
         expect(trades).to.have.lengthOf(2);
         expect(trades[0].symbol).to.equal('BA');
         expect(trades[0].securityType).to.equal('STK');
@@ -52,5 +52,22 @@ describe('FlexQueryParser', () => {
         expect(trades[1].symbol).to.equal('BA    150417C00144000');
         expect(trades[1].securityType).to.equal('OPT');
         expect(trades[1].transactionType).to.equal('BookTrade');
+    });
+
+    it('should get FX mappings', async () => {
+        const testFileData = await fs.readFile('test/fixtures/option_exercised.xml', 'utf8');
+        flexParser.parse(testFileData);
+        const rates = flexParser.getConversionRates();
+        expect(rates.get('2015-03-30')?.get('SEK/USD')).to.equal(0.1542);
+        expect(rates.get('2015-03-31')?.get('SEK/USD')).to.equal(0.15421);
+        expect(rates.get('2015-03-31')?.get('EUR/USD')).to.equal(1.3634);
+    });
+
+    it('should have full SEK FX mappings', async () => {
+        // // Verify calculated SEK rates:
+        // expect(rates.get('2015-03-30')?.get('USD/SEK')).to.equal(1/0.1542);
+        // expect(rates.get('2015-03-31')?.get('USD/SEK')).to.equal(1/0.15421);
+        // expect(rates.get('2015-03-31')?.get('SEK/EUR')).to.equal(0.15420/1.3634); // 0.15420 SEK/USD / 1.36 EUR/USD = SEK/EUR
+        // expect(rates.get('2015-03-31')?.get('EUR/SEK')).to.equal(1/(0.15420/1.3634))
     });
 });
