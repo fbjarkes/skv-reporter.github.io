@@ -45,6 +45,30 @@ interface FQRate {
     _rate: number;
 }
 
+const addCalculatedPairs = (ratesByDate:  Map<string, Map<string, number>>) => {
+    // For each day:
+    //  1. get SEK/USD rate
+    //  2. iterate over every other pair, <CURR>/USD and calculate <CURR>/SEK using SEK/USD
+    ratesByDate.forEach((pairs: Map<string, number>) => {
+        const sekUsd = pairs.get('SEK/USD');
+        if (sekUsd) {            
+            const calculated = new Map();
+            pairs.forEach((val: number, key: string) => {                
+                if (key !== 'SEK/USD') {                    
+                    const numerator = key.substr(0,3);
+                    const rate = sekUsd/val;
+                    calculated.set('SEK/'+numerator, rate);
+                    calculated.set(numerator+'/SEK', 1/rate);
+                }                
+            });
+            calculated.forEach((v, k) => {
+                pairs.set(k, v.toFixed(4));
+            })
+            pairs.set('USD/SEK', 1 / sekUsd);
+        }
+    });
+}
+
 export class FlexQueryParser {
     options = {
         attributeNamePrefix: '_',
@@ -113,11 +137,8 @@ export class FlexQueryParser {
                         this.rates.set(dateString, pairs);
                     }
                 },
-            );
-            // TODO: add CUR/SEK for all rates
-            // CAD/SEK = 0.15SEK/1USD * 1USD/0.8CAD
-            // EUR/SEK = 0.15SEK/1USD * 1USD/1.36EUR
-            //this.convertPairs(this.rates);
+            );            
+            addCalculatedPairs(this.rates);
         }
 
         return this.trades;

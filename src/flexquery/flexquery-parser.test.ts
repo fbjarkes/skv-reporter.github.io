@@ -68,11 +68,13 @@ describe('FlexQueryParser', () => {
         expect(rates.get('2015-03-31')?.get('EUR/USD')).to.equal(1.3634);
     });
 
-    it('should have full SEK FX mappings', async () => {
-        // // Verify calculated SEK rates:
-        // expect(rates.get('2015-03-30')?.get('USD/SEK')).to.equal(1/0.1542);
-        // expect(rates.get('2015-03-31')?.get('USD/SEK')).to.equal(1/0.15421);
-        // expect(rates.get('2015-03-31')?.get('SEK/EUR')).to.equal(0.15420/1.3634); // 0.15420 SEK/USD / 1.36 EUR/USD = SEK/EUR
-        // expect(rates.get('2015-03-31')?.get('EUR/SEK')).to.equal(1/(0.15420/1.3634))
+    it('should have calculated FX mappings', async () => {
+		const testFileData = await fs.readFile('test/fixtures/option_exercised.xml', 'utf8');
+        flexParser.parse(testFileData);
+        const rates = flexParser.getConversionRates();        
+        expect(rates.get('2015-03-30')?.get('USD/SEK')).to.equal(1/0.1542);
+        expect(rates.get('2015-03-31')?.get('USD/SEK')).to.equal(1/0.15421);
+        expect(rates.get('2015-03-31')?.get('SEK/EUR')).to.equal((0.15421/1.3634).toFixed(4)); // 0.15420 SEK/USD / 1.36 EUR/USD = SEK/EUR
+        expect(rates.get('2015-03-31')?.get('EUR/SEK')).to.equal((1/(0.15421/1.3634)).toFixed(4))
     });
 });
