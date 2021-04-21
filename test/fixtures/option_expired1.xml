@@ -1,0 +1,17 @@
+<FlexQueryResponse queryName="Simple 1" type="AF">
+<FlexStatements count="1">
+<FlexStatement accountId="U12345678" fromDate="20150203" toDate="20150206" period="" whenGenerated="20150207 04:04:49">
+<Trades>
+
+
+<Trade currency="SEK" assetCategory="OPT" fxRateToBase="0.11886" symbol="OMXS30 MAR15 1565 P" description="OMXS30 20MAR15 1565.0 P" reportDate="20150216" tradeDate="20150216" tradeTime="112451" transactionType="ExchTrade" quantity="1" tradePrice="13.75" proceeds="-1375" ibCommission="-13.5" ibCommissionCurrency="SEK" closePrice="11.97" fifoPnlRealized="0" buySell="BUY" cost="1388.5" openCloseIndicator="O" openDateTime="--" />
+<Trade currency="SEK" assetCategory="OPT" fxRateToBase="0.11603" symbol="OMXS30 MAR15 1565 P" description="OMXS30 20MAR15 1565.0 P" reportDate="20150320" tradeDate="20150320" tradeTime="150000" transactionType="BookTrade" quantity="-1" tradePrice="0" proceeds="-0" ibCommission="-10" ibCommissionCurrency="SEK" closePrice="0.01" fifoPnlRealized="-1398.5" buySell="SELL" cost="-1388.5" openCloseIndicator="C" openDateTime="--" />
+
+</Trades>
+<ConversionRates>
+	<ConversionRate acctAlias="--" reportDate="2014-12-19" fromCurrency="SEK" toCurrency="USD" rate="0.15421" />
+</ConversionRates>
+
+</FlexStatement>
+</FlexStatements>
+</FlexQueryResponse>

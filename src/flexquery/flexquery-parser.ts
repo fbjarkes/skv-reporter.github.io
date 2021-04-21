@@ -1,4 +1,3 @@
-import { Fade } from '@material-ui/core';
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
 import parser from 'fast-xml-parser';
@@ -103,22 +102,22 @@ export class FlexQueryParser {
         if (xmlData.FlexQueryResponse.FlexStatements.FlexStatement.Trades.Trade) {
             xmlData.FlexQueryResponse.FlexStatements.FlexStatement.Trades.Trade.forEach((item: FQTrade) => {
                 if (item._openCloseIndicator == 'C') {
-                    let t = new TradeType();
-                    t.symbol = item._symbol;
-                    t.securityType = item._assetCategory;
-                    t.quantity = Number(item._quantity);
-                    t.pnl = Number(item._fifoPnlRealized);
-                    t.exitPrice = Number(item._tradePrice);
-                    t.exitDateTime = this.toDateString(item._tradeDate, item._tradeTime);
-                    t.direction = item._quantity < 0 ? 'LONG' : 'SHORT';
-                    t.quantity = Math.abs(item._quantity);
-                    t.description = item._description;
-                    t.proceeds = Number(item._proceeds);
-                    t.cost = Number(item._cost);
-                    t.commission = Number(item._ibCommission);
-                    t.currency = item._currency;
-                    t.transactionType = item._transactionType;
-                    this.trades.push(t);
+                        const t = new TradeType();
+                        t.symbol = item._symbol;
+                        t.securityType = item._assetCategory;
+                        t.quantity = Number(item._quantity);
+                        t.pnl = Number(item._fifoPnlRealized);
+                        t.exitPrice = Number(item._tradePrice);
+                        t.exitDateTime = this.toDateString(item._tradeDate, item._tradeTime);
+                        t.direction = item._quantity < 0 ? 'LONG' : 'SHORT';
+                        t.quantity = Math.abs(item._quantity);
+                        t.description = item._description;
+                        t.proceeds = Number(item._proceeds);
+                        t.cost = Number(item._cost);
+                        t.commission = Number(item._ibCommission);
+                        t.currency = item._currency;
+                        t.transactionType = item._transactionType;
+                        this.trades.push(t);
                 }
             });
         }
