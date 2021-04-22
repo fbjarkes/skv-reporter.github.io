@@ -1,6 +1,6 @@
 import { K4_TYPE, Statement } from "../types/statement";
 import { TradeType } from "../types/trade";
-
+import { logger } from '../logging';
 
 export class SRUFile {
 
@@ -40,8 +40,9 @@ export class SRUFile {
             const cost = (trade.cost + trade.commission) * rate;
             const proceeds = trade.proceeds * rate;
             const pnl = trade.pnl * rate;
-            // TODO: logger.info('Adding statement...')
-            statements.push(new Statement(`${trade.symbol} ${trade.description}`, cost, proceeds, pnl, this.toK4Type(trade)))
+            const statement = new Statement(`${trade.symbol} ${trade.description}`, cost, proceeds, pnl, this.toK4Type(trade))
+            logger.info(`Adding: ${statement}`)
+            statements.push(statement)
         });
         return statements;
     }

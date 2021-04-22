@@ -20,4 +20,8 @@ export class Statement {
         this.pnl = pnl,
         this.type = type;
     }
+
+    public toString(): string {
+        return `${this.symbol} (${this.type}): paid=${this.paid}, received=${this.received}, pnl=${this.pnl}`;
+    }
 }
