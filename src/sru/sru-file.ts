@@ -1,8 +1,10 @@
+import { chunk } from 'lodash';
 import { K4_TYPE, Statement } from "../types/statement";
 import { TradeType } from "../types/trade";
 import { logger } from '../logging';
 import { K4Form } from "../types/k4-form";
 import format from "date-fns/format";
+
 
 export class SRUInfo {
     id?: string;
@@ -83,15 +85,15 @@ export class SRUFile {
         ]
     }
 
-    splitStatements(): Statement[][] {
-        const chunks: Statement[][] = [];
+    static splitStatements(statements: Statement[]): Statement[][] {
         // TODO: max 9 TYPE_A, 7 TYPE_C, 7 TYPE_D
-        return chunks;
+        const statements_a = statements.filter((s: Statement) => s.type === K4_TYPE.TYPE_A);
+        return chunk(statements_a,9)
     }
 
     getFormData(): string[] {
         const forms: K4Form[] = [];        
-        const chunks = this.splitStatements();        
+        const chunks = SRUFile.splitStatements(this.getStatements());        
         let page = 1
         chunks.forEach((chunk: Statement[]) => {
             const form = new K4Form('', page++,'', this.createDate, chunk);

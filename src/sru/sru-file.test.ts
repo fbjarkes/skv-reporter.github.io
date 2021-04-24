@@ -3,7 +3,8 @@ import format from 'date-fns/format';
 import chaiAsPromised from 'chai-as-promised';
 import { K4Form } from '../types/k4-form';
 import { TradeType } from '../types/trade';
-import { SRUFile } from './sru-file';
+import { SRUFile, SRUInfo } from './sru-file';
+import { K4_TYPE, Statement } from '../types/statement';
 
 
 chai.use(chaiAsPromised);
@@ -55,9 +56,10 @@ describe('SRU Files', () => {
             '#MEDIELEV_SLUT'
         ]
         expect(lines).to.have.members(expectedLines);
-    });
+    });   
 
     describe('SRU statements', () => {
+
         it('should create valid statement from closing trades', () => {
             const t1 = new TradeType(); 
             t1.exitDateTime = '2020-01-10';
@@ -95,6 +97,14 @@ describe('SRU Files', () => {
             expect(statements[0].pnl).to.equal(-1398)
             expect(statements[0].paid).to.equal(1398);
             expect(statements[0].received).to.equal(0);
+        });
+
+        it('should split statements according to K4 form limits', () => {
+            const statements = new Array(19).fill(new Statement(100, 'SPY', 100, 100, 0, K4_TYPE.TYPE_A));            
+            const chunks = SRUFile.splitStatements(statements);
+            expect(chunks[0]).to.be.of.length(9);
+            expect(chunks[1]).to.be.of.length(9);
+            expect(chunks[2]).to.be.of.length(1);
         });
     });
 
