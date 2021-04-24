@@ -1,4 +1,5 @@
 import chai, { expect } from 'chai';
+import format from 'date-fns/format';
 import chaiAsPromised from 'chai-as-promised';
 import { K4Form } from '../types/k4-form';
 import { TradeType } from '../types/trade';
@@ -26,6 +27,35 @@ describe('SRU Files', () => {
         t.pnl = pnl;
         return t;
     }
+
+    it('should create SRU info', () => {
+        const sru = new SRUFile(new Map(), [], {
+            id: '199001011234',
+            name: 'NAME',
+            surname: 'SURNAME',
+            mail: 'test@example.com',
+            code: '12345',
+            city: 'STOCKHOLM'
+        });
+        const lines = sru.getInfoData();
+        
+        const expectedLines = [
+            '#DATABESKRIVNING_START',
+            '#PRODUKT SRU',
+            `#SKAPAD ${format(new Date(), 'yyyyMMdd')}`,
+            '#PROGRAM SKV-Reporter SKV-Reporter',
+            '#FILNAMN blanketter.sru',
+            '#DATABESKRIVNING_SLUT',
+            '#MEDIELEV_START',
+            '#ORGNR 199001011234',
+            '#NAMN NAME SURNAME',
+            '#POSTNR 12345',
+            '#POSTORT STOCKHOLM',
+            '#EMAIL test@example.com',
+            '#MEDIELEV_SLUT'
+        ]
+        expect(lines).to.have.members(expectedLines);
+    });
 
     describe('SRU statements', () => {
         it('should create valid statement from closing trades', () => {

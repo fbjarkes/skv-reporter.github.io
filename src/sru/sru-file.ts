@@ -2,14 +2,27 @@ import { K4_TYPE, Statement } from "../types/statement";
 import { TradeType } from "../types/trade";
 import { logger } from '../logging';
 import { K4Form } from "../types/k4-form";
+import format from "date-fns/format";
+
+export class SRUInfo {
+    id?: string;
+    name?: string;
+    surname?: string;
+    mail?: string;
+    code?: string;
+    city?: string;
+}   
 
 export class SRUFile {
-
+    
+    sruInfo?: SRUInfo;
+    title = 'SKV-Reporter';
     trades: TradeType[];
     fxRates: Map<string, Map<string, number>>;
     createDate = new Date();
     
-    constructor(fxRates: Map<string, Map<string, number>>, trades: TradeType[]) {
+    constructor(fxRates: Map<string, Map<string, number>>, trades: TradeType[], data?: SRUInfo) {
+        this.sruInfo = data;
         this.fxRates = fxRates;
         this.trades = trades;
     }
@@ -53,7 +66,21 @@ export class SRUFile {
     }
 
     getInfoData(): string[] {
-        return [];
+        return [
+            '#DATABESKRIVNING_START',
+            '#PRODUKT SRU',
+            `#SKAPAD ${format(this.createDate, 'yyyyMMdd')}`,
+            `#PROGRAM ${this.title} ${this.title}`,
+            '#FILNAMN blanketter.sru',
+            '#DATABESKRIVNING_SLUT',
+            '#MEDIELEV_START',
+            `#ORGNR ${this.sruInfo?.id}`,
+            `#NAMN ${this.sruInfo?.name} ${this.sruInfo?.surname}`,
+            `#POSTNR ${this.sruInfo?.code}`,
+            `#POSTORT ${this.sruInfo?.city}`,
+            `#EMAIL ${this.sruInfo?.mail}`,
+            '#MEDIELEV_SLUT'
+        ]
     }
 
     splitStatements(): Statement[][] {

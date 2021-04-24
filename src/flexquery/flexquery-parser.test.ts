@@ -1,7 +1,6 @@
 import chai, { expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { promises as fs } from 'fs';
-import { TradeType } from '../types/trade';
 import { FlexQueryParser } from './flexquery-parser';
 
 chai.use(chaiAsPromised);
