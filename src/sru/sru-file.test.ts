@@ -47,6 +47,25 @@ describe('SRU Files', () => {
             expect(statements[0].received).to.equal(Math.round(1000*9.1));
         });
 
+        it('should create statement for non-USD trade correctly', () => {
+            const expiredOpt = new TradeType();
+            expiredOpt.description = 'OMXS30 MAR15 1565 P';
+            expiredOpt.exitDateTime = '2020-01-10';
+            expiredOpt.quantity = -1;
+            expiredOpt.proceeds = 0;
+            expiredOpt.cost = -1388.5;
+            expiredOpt.securityType = 'OPT';
+            expiredOpt.currency = 'SEK';
+            expiredOpt.pnl = -1398.5;
+            expiredOpt.commission = -10;
+            const sru = new SRUFile(fxRates, [expiredOpt]);
+            
+            const statements = sru.getStatements();
+            
+            expect(statements[0].pnl).to.equal(-1398)
+            expect(statements[0].paid).to.equal(1398);
+            expect(statements[0].received).to.equal(0);
+        });
     });
 
     describe('K4 forms', () => {
@@ -130,6 +149,8 @@ describe('SRU Files', () => {
             expect(lines).to.have.members(expectedLines);
 
         });
+        
+       
 
         // it('should throw exception when more than 9 TYPE A statements', () => {
 

@@ -75,6 +75,6 @@ describe('FlexQueryParser', () => {
         expect(rates.get('2015-03-30')?.get('USD/SEK')).to.equal(1/0.1542);
         expect(rates.get('2015-03-31')?.get('USD/SEK')).to.equal(1/0.15421);
         expect(rates.get('2015-03-31')?.get('SEK/EUR')).to.equal((0.15421/1.3634).toFixed(4)); // 0.15420 SEK/USD / 1.36 EUR/USD = SEK/EUR
-        expect(rates.get('2015-03-31')?.get('EUR/SEK')).to.equal((1/(0.15421/1.3634)).toFixed(4))
+        expect(rates.get('2015-03-31')?.get('EUR/SEK')).to.equal((1/(0.15421/1.3634)).toFixed(4));
     });
 });
