@@ -8,16 +8,18 @@ export enum K4_TYPE {
 export class Statement {
 
     symbol: string; // TODO: max 80 chars
+    quantity = 0;
     received: number;
     paid: number;
     pnl: number;
     type: K4_TYPE;
     
-    constructor(symbol: string, paid: number, received: number, pnl: number, type: K4_TYPE) {
+    constructor(quantity: number, symbol: string, paid: number, received: number, pnl: number, type: K4_TYPE) {
+        this.quantity = quantity;
         this.symbol = symbol;
-        this.paid = paid;
-        this.received = received;
-        this.pnl = pnl,
+        this.paid = Math.round(paid);
+        this.received = Math.round(received);
+        this.pnl = Math.round(pnl);
         this.type = type;
     }
 

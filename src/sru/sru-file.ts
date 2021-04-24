@@ -40,7 +40,7 @@ export class SRUFile {
             const cost = (trade.cost + trade.commission) * rate;
             const proceeds = trade.proceeds * rate;
             const pnl = trade.pnl * rate;
-            const statement = new Statement(`${trade.symbol} ${trade.description}`, cost, proceeds, pnl, this.toK4Type(trade))
+            const statement = new Statement(trade.quantity, `${trade.symbol} ${trade.description}`, cost, proceeds, pnl, this.toK4Type(trade))
             logger.info(`Adding: ${statement}`)
             statements.push(statement)
         });
