@@ -7,7 +7,7 @@ export enum K4_TYPE {
 
 export class Statement {
 
-    symbol: string;
+    symbol: string; // TODO: max 80 chars
     received: number;
     paid: number;
     pnl: number;
