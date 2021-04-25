@@ -12,7 +12,9 @@ chai.use(chaiAsPromised);
 describe('SRU Files', () => {
 
     const fxRates: Map<string, Map<string, number>> = new Map(Object.entries({
-        '2020-01-10': new Map(Object.entries({'USD/SEK': 9.1}))
+        '2020-01-10': new Map(Object.entries({'USD/SEK': 9.1})),
+        '2017-09-22': new Map(Object.entries({'USD/SEK': 7.98}),
+        )
     }));
 
     const _createTrade = (symbol: string, cost: number, proceeds: number, comm: number, pnl: number, qty = 100, secType = 'STK'): TradeType => {
@@ -59,7 +61,7 @@ describe('SRU Files', () => {
     });   
 
     describe('SRU statements', () => {
-
+        
         it('should create valid statement from closing trades', () => {
             const t1 = new TradeType(); 
             t1.exitDateTime = '2020-01-10';
@@ -99,8 +101,31 @@ describe('SRU Files', () => {
             expect(statements[0].received).to.equal(0);
         });
 
+        it('should handle short trades correctly', () => {
+            const t1 = new TradeType();             
+            t1.currency= 'USD';
+            t1.direction = 'SHORT';
+            t1.exitDateTime = '2017-09-22 14:21'
+            t1.exitPrice = 5.1;
+            t1.pnl = -436.19;
+            t1.cost = 74.9;
+            t1.proceeds = -510;     
+            t1.commission = -1.0915;                        
+            t1.quantity = 1
+            t1.securityType = 'OPT';
+            t1.symbol = 'APC';
+            t1.transactionType = 'ExchTrade';
+
+            const sru = new SRUFile(fxRates, [t1]);
+            const statements = sru.getStatements();
+            expect(statements[0].pnl).to.equal(-3481);
+            expect(statements[0].quantity).to.equal(1);
+            expect(statements[0].paid).to.equal(4079)
+            expect(statements[0].received).to.equal(598);
+        });
+
         it('should split statements according to K4 form limits', () => {
-            const statements = new Array(19).fill(new Statement(100, 'SPY', 100, 100, 0, K4_TYPE.TYPE_A));            
+            const statements = new Array(19).fill(new Statement(100, 'SPY', 100, 100, 0, K4_TYPE.TYPE_A, ''));            
             const chunks = SRUFile.splitStatements(statements);
             expect(chunks[0]).to.be.of.length(9);
             expect(chunks[1]).to.be.of.length(9);

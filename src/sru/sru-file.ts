@@ -52,15 +52,24 @@ export class SRUFile {
         this.trades.forEach((trade: TradeType) => {            
             let rate: number | undefined = 1;
             if (trade.currency !== 'SEK') {
-                rate = this.fxRates.get(trade.exitDateTime)?.get('USD/SEK');
+                const key = trade.exitDateTime.substring(0, 10);
+                rate = this.fxRates.get(key)?.get('USD/SEK');
                 if (!rate) {
                     throw new Error(`Missing USD/SEK rate for ${trade.exitDateTime}`);
                 }
             } 
-            const cost = (trade.cost + trade.commission) * rate;
-            const proceeds = trade.proceeds * rate;
+            let paid, received;
+            if (trade.direction === 'SHORT') {
+                paid = (trade.proceeds + trade.commission) * rate;
+                received = trade.cost * rate;
+            } else {
+                paid = (trade.cost + trade.commission) * rate;
+                received = trade.proceeds * rate;
+            }
             const pnl = trade.pnl * rate;
-            const statement = new Statement(trade.quantity, `${trade.symbol} ${trade.description}`, cost, proceeds, pnl, this.toK4Type(trade))
+            const statement = new Statement(trade.quantity, `${trade.symbol} ${trade.description}`, paid, received, pnl, this.toK4Type(trade), trade.exitDateTime);
+            
+            
             logger.info(`Adding: ${statement}`)
             statements.push(statement)
         });
@@ -88,7 +97,7 @@ export class SRUFile {
     static splitStatements(statements: Statement[]): Statement[][] {
         // TODO: max 9 TYPE_A, 7 TYPE_C, 7 TYPE_D
         const statements_a = statements.filter((s: Statement) => s.type === K4_TYPE.TYPE_A);
-        return chunk(statements_a,9)
+        return chunk(statements_a, 9)
     }
 
     getFormData(): string[] {

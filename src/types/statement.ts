@@ -13,17 +13,19 @@ export class Statement {
     paid: number;
     pnl: number;
     type: K4_TYPE;
+    date: string;
     
-    constructor(quantity: number, symbol: string, paid: number, received: number, pnl: number, type: K4_TYPE) {
+    constructor(quantity: number, symbol: string, paid: number, received: number, pnl: number, type: K4_TYPE, date: string) {
         this.quantity = quantity;
         this.symbol = symbol;
         this.paid = Math.abs(Math.round(paid));
         this.received = Math.abs(Math.round(received));
         this.pnl = Math.round(pnl);
         this.type = type;
+        this.date = date;
     }
 
     public toString(): string {
-        return `${this.symbol} (${this.type}): paid=${this.paid}, received=${this.received}, pnl=${this.pnl}`;
+        return `${this.symbol} (${this.type}) ${this.date}: qty=${this.quantity} paid=${this.paid}, received=${this.received}, pnl=${this.pnl}`;
     }
 }

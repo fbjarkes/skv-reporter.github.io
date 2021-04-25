@@ -89,7 +89,7 @@ export class FlexQueryParser {
     }
 
     public getClosingTrades(): TradeType[] {
-        return [];
+        return this.trades;
     }
 
     public getConversionRates(): Map<string, Map<string, number>> {
@@ -110,7 +110,7 @@ export class FlexQueryParser {
                         t.exitPrice = Number(item._tradePrice);
                         t.exitDateTime = this.toDateString(item._tradeDate, item._tradeTime);
                         t.direction = item._quantity < 0 ? 'LONG' : 'SHORT';
-                        t.quantity = Math.abs(item._quantity);
+                        t.quantity = Number(item._quantity);
                         t.description = item._description;
                         t.proceeds = Number(item._proceeds);
                         t.cost = Number(item._cost);
