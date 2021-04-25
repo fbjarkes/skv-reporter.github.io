@@ -83,6 +83,5 @@ describe('FlexQueryParser', () => {
         expect(trades).to.have.lengthOf(2);
         expect(trades[0].quantity).to.equal(1); // QTY is pos. for short closing trades
         expect(trades[1].quantity).to.equal(-1);
-        console.log(trades[0]);
     });
 });
