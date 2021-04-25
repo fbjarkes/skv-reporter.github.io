@@ -28,4 +28,8 @@ export class TradeType {
         this.openClose = openClose;
         this.direction = direction;
     }
+
+    public toString(): string {
+        return `${this.symbol}: ${this.entryDateTime} - ${this.exitDateTime}, qty=${this.quantity}, entry=${this.entryPrice}, exit=${this.exitPrice}, pnl=${this.pnl}`;
+    }
 }

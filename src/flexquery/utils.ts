@@ -37,16 +37,23 @@ export const setTradeEntryDates = (trades: TradeType[]): void => {
         if (t.openClose === 'C') {
             const open = openTrades.get(t.symbol);
             if (open) {
-                t.entryDateTime = open.date;  
-                if (t.direction === 'SHORT') {
-                    if (open.quantity + t.quantity >= 0) {
-                        openTrades.delete(t.symbol);
-                    } 
-                } else {
-                    if (open.quantity + t.quantity <= 0) {
-                        openTrades.delete(t.symbol);
-                    } 
-                }                
+                t.entryDateTime = open.date;
+                open.quantity += t.quantity;
+                if (open.quantity === 0) {
+                    openTrades.delete(t.symbol);        
+                }
+                // if (t.direction === 'SHORT') {                    
+                //     if (open.quantity > 0) {
+                //         // TODO: flip to LONG
+                //     }                    
+                //     // if (open.quantity + t.quantity >= 0) {
+                //     //     openTrades.delete(t.symbol);
+                //     // } 
+                // } else {
+                //     if (open.quantity + t.quantity <= 0) {
+                //         openTrades.delete(t.symbol);
+                //     } 
+                // }                
             }            
         }
     })
