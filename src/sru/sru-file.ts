@@ -67,11 +67,13 @@ export class SRUFile {
                 received = trade.proceeds * rate;
             }
             const pnl = trade.pnl * rate;
-            const statement = new Statement(trade.quantity, `${trade.symbol} ${trade.description}`, paid, received, pnl, this.toK4Type(trade), trade.exitDateTime);
-            
-            
-            logger.info(`Adding: ${statement}`)
-            statements.push(statement)
+            const statement = new Statement(trade.quantity, `${trade.symbol} ${trade.description}`, paid, received, pnl, this.toK4Type(trade), trade.exitDateTime);            
+            if (Math.abs(pnl) < 1) {                
+                logger.info(`Skipping trade with < 1SEK: ${statement.toString()}`)
+            } else {
+                logger.info(`Adding: ${statement.toString()}`)
+                statements.push(statement)
+            }                            
         });
         return statements;
     }

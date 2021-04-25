@@ -28,6 +28,7 @@ describe('SRU Files', () => {
         t.cost = cost
         t.commission = comm;
         t.pnl = pnl;
+        t.transactionType = 'ExchTrade';
         return t;
     }
 
@@ -72,6 +73,7 @@ describe('SRU Files', () => {
             t1.proceeds = 1000;
             t1.cost = 900;
             t1.commission = 1.5;
+            t1.transactionType = 'ExchTrade';
             t1.pnl = 98.5; // 1000 - (900 + 1.5)
 
             const sru = new SRUFile(fxRates, [t1]);
@@ -92,6 +94,7 @@ describe('SRU Files', () => {
             expiredOpt.currency = 'SEK';
             expiredOpt.pnl = -1398.5;
             expiredOpt.commission = -10;
+            expiredOpt.transactionType = 'ExchTrade';
             const sru = new SRUFile(fxRates, [expiredOpt]);
             
             const statements = sru.getStatements();
@@ -130,6 +133,35 @@ describe('SRU Files', () => {
             expect(chunks[0]).to.be.of.length(9);
             expect(chunks[1]).to.be.of.length(9);
             expect(chunks[2]).to.be.of.length(1);
+        });
+
+        it('should not create statements for trades with PnL < 1 SEK', () => {
+            const t1 = new TradeType();             
+            t1.currency= 'USD';
+            t1.exitDateTime = '2017-09-22 14:21'
+            t1.exitPrice = 0;
+            t1.pnl = 0;
+            t1.cost = -68.59
+            t1.proceeds = 0;     
+            t1.commission = 0;  
+            t1.quantity = -1
+            t1.securityType = 'OPT';
+            t1.symbol = 'IWM';
+            t1.transactionType = 'BookTrade';
+            const t2 = new TradeType(); 
+            t2.exitDateTime = '2020-01-10';
+            t2.symbol = 'SPY';              
+            t2.securityType = 'STK';                
+            t2.pnl = 0.1;
+            const t3 = new TradeType(); 
+            t3.exitDateTime = '2020-01-10';
+            t3.symbol = 'SPY';              
+            t3.securityType = 'STK';                
+            t3.pnl = 0.2; 
+
+            const sru = new SRUFile(fxRates, [t1, t2, t3]);
+            const statements = sru.getStatements();
+            expect(statements).to.be.of.length(1);
         });
     });
 
