@@ -111,10 +111,12 @@ export class SRUFile {
             forms.push(form);
         });
 
-        const formData: string[] = []
+        let formData: string[] = []
         forms.forEach((f: K4Form) =>  {
-            formData.concat(f.generateLines());
+            const lines = f.generateLines()
+            formData = formData.concat(lines);
         });
+        
         return formData;
     }
     

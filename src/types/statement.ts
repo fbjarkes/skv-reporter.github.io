@@ -16,7 +16,7 @@ export class Statement {
     date: string;
     
     constructor(quantity: number, symbol: string, paid: number, received: number, pnl: number, type: K4_TYPE, date: string) {
-        this.quantity = quantity;
+        this.quantity = Math.abs(quantity);
         this.symbol = symbol;
         this.paid = Math.abs(Math.round(paid));
         this.received = Math.abs(Math.round(received));
