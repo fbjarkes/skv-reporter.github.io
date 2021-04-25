@@ -1,7 +1,9 @@
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
 import parser from 'fast-xml-parser';
+import { logger } from '../logging';
 import { TradeType } from '../types/trade';
+import { setTradeEntryDates } from './utils';
 
 const FQ_DATETIME_FORMAT = 'yyyyMMdd HHmmss'; // TODO: To be configurable in .env?
 const FQ_DATE_FORMAT = 'yyyyMMdd';
@@ -78,7 +80,6 @@ export class FlexQueryParser {
 
     private rates: Map<string, Map<string, number>> = new Map();
     private trades: TradeType[] = [];
-    private openTradesMap: Map<string, TradeType> = new Map(); //TODO: use TradeType for tracking open trades?
 
     toDateString(tradeDate: string, tradeTime: string): string {
         // TODO: default to 'New_York/America' tz?
@@ -89,6 +90,10 @@ export class FlexQueryParser {
     }
 
     public getClosingTrades(): TradeType[] {
+        return this.trades.filter(t => t.openClose === 'C');
+    }
+
+    public getAllTrades(): TradeType[] {
         return this.trades;
     }
 
@@ -101,23 +106,35 @@ export class FlexQueryParser {
 
         if (xmlData.FlexQueryResponse.FlexStatements.FlexStatement.Trades.Trade) {
             xmlData.FlexQueryResponse.FlexStatements.FlexStatement.Trades.Trade.forEach((item: FQTrade) => {
-                if (item._openCloseIndicator == 'C') {
-                        const t = new TradeType();
-                        t.symbol = item._symbol;
-                        t.securityType = item._assetCategory;
-                        t.quantity = Number(item._quantity);
-                        t.pnl = Number(item._fifoPnlRealized);
+                if (item._openCloseIndicator === 'C' || item._openCloseIndicator === 'O') {
+                    const t = new TradeType();
+                    t.symbol = item._symbol;
+                    t.securityType = item._assetCategory;
+                    t.quantity = Number(item._quantity);
+                    t.pnl = Number(item._fifoPnlRealized);
+                    
+                    
+                    t.quantity = Number(item._quantity);
+                    t.description = item._description;
+                    t.proceeds = Number(item._proceeds);
+                    t.cost = Number(item._cost);
+                    t.commission = Number(item._ibCommission);
+                    t.currency = item._currency;
+                    t.transactionType = item._transactionType;
+                    t.openClose = item._openCloseIndicator;
+
+                    if (item._openCloseIndicator === 'C') {
                         t.exitPrice = Number(item._tradePrice);
                         t.exitDateTime = this.toDateString(item._tradeDate, item._tradeTime);
                         t.direction = item._quantity < 0 ? 'LONG' : 'SHORT';
-                        t.quantity = Number(item._quantity);
-                        t.description = item._description;
-                        t.proceeds = Number(item._proceeds);
-                        t.cost = Number(item._cost);
-                        t.commission = Number(item._ibCommission);
-                        t.currency = item._currency;
-                        t.transactionType = item._transactionType;
-                        this.trades.push(t);
+                    } else {
+                        t.entryPrice = Number(item._tradePrice);
+                        t.entryDateTime = this.toDateString(item._tradeDate, item._tradeTime);
+                        t.direction = item._quantity > 0 ? 'LONG' : 'SHORT';
+                    }
+                    this.trades.push(t);
+                } else {
+                    logger.info(`Not handling FQTrade: ${item}`);
                 }
             });
         }
@@ -140,6 +157,9 @@ export class FlexQueryParser {
             addCalculatedPairs(this.rates);
         }
 
-        return this.trades;
+        // Add Entry dates for closing trades
+        setTradeEntryDates(this.trades);
+
+        return this.trades.filter(t => t.openClose === 'C');
     }
 }

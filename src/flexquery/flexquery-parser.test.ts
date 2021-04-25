@@ -84,4 +84,33 @@ describe('FlexQueryParser', () => {
         expect(trades[0].quantity).to.equal(1); // QTY is pos. for short closing trades
         expect(trades[1].quantity).to.equal(-1);
     });
+
+    it('should have entry datetime for closing trade', async () => {
+        const testFileData = await fs.readFile('test/fixtures/trade1.xml', 'utf8');
+        const trades = flexParser.parse(testFileData);
+        expect(trades).to.have.lengthOf(1);
+        expect(trades[0].entryDateTime).to.equal('2015-03-26 16:00');
+    });
+
+    it('should set fields correctly for Opening trades', async () => {
+        const testFileData = await fs.readFile('test/fixtures/trade3.xml', 'utf8');
+        flexParser.parse(testFileData);
+        const trades = flexParser.getAllTrades();
+        expect(trades).to.have.lengthOf(4);
+        expect(trades[0].symbol).to.equal('APC   170922C00043500');
+        expect(trades[0].description).to.equal('APC 22SEP17 43.5 C');
+        expect(trades[0].quantity).to.equal(-1);
+        expect(trades[0].entryPrice).to.equal(0.76);
+        expect(trades[0].exitPrice).to.equal(0);
+        expect(trades[0].proceeds).to.equal(76);
+        expect(trades[0].cost).to.equal(-74.9047444);
+        expect(trades[0].pnl).to.equal(0);
+        expect(trades[0].securityType).to.equal('OPT');
+        expect(trades[0].entryDateTime).to.equal('2017-09-14 15:55');
+        expect(trades[0].exitDateTime).to.equal('');
+        expect(trades[0].commission).to.equal(-1.0952556);
+        expect(trades[0].currency).to.equal('USD');
+        expect(trades[0].direction).to.equal('SHORT');
+        expect(trades[0].transactionType).to.equal('ExchTrade');
+    });
 });

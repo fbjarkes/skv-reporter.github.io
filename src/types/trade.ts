@@ -1,3 +1,5 @@
+import { timeStamp } from "node:console";
+
 export class TradeType {
     entryDateTime = '';
     exitDateTime = '';
@@ -14,4 +16,16 @@ export class TradeType {
     direction = '';
     commission = 0;
     transactionType = '';
+    openClose = '';
+
+    constructor(symbol = '', qty = 0, entry = 0, exit= 0, entryDate = '', exitDate = '', openClose = '', direction = '') {
+        this.symbol = symbol;
+        this.quantity = qty;
+        this.entryPrice = entry;
+        this.exitPrice = exit;
+        this.entryDateTime = entryDate;
+        this.exitDateTime = exitDate;
+        this.openClose = openClose;
+        this.direction = direction;
+    }
 }
