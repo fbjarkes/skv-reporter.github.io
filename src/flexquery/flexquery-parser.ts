@@ -83,6 +83,9 @@ export class FlexQueryParser {
 
     toDateString(tradeDate: string, tradeTime: string): string {
         // TODO: default to 'New_York/America' tz?
+        if (!tradeTime) {
+            tradeTime = '160000';
+        }
         const t = tradeDate + ' ' + tradeTime;
         const dt = parse(t, FQ_DATETIME_FORMAT, new Date());
         const str = format(dt, DATETIME_FORMAT);

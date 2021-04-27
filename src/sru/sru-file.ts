@@ -55,7 +55,7 @@ export class SRUFile {
                 const key = trade.exitDateTime.substring(0, 10);
                 rate = this.fxRates.get(key)?.get('USD/SEK');
                 if (!rate) {
-                    throw new Error(`Missing USD/SEK rate for ${trade.exitDateTime}`);
+                    throw new Error(`Missing USD/SEK rate for ${key}`);
                 }
             } 
             let paid, received;
@@ -102,22 +102,31 @@ export class SRUFile {
         return chunk(statements_a, 9)
     }
 
-    getFormData(): string[] {
-        const forms: K4Form[] = [];        
-        const chunks = SRUFile.splitStatements(this.getStatements());        
-        let page = 1
-        chunks.forEach((chunk: Statement[]) => {
-            const form = new K4Form('', page++,'', this.createDate, chunk);
-            forms.push(form);
-        });
-
-        let formData: string[] = []
-        forms.forEach((f: K4Form) =>  {
-            const lines = f.generateLines()
-            formData = formData.concat(lines);
-        });
+    getFormData(): string[][] {
+        const files: string[][] = []
         
-        return formData;
+        const statementChunks = SRUFile.splitStatements(this.getStatements());
+        const formChunks = chunk(statementChunks, 400);
+
+        formChunks.forEach(chunks => {
+            const forms: K4Form[] = [];        
+        
+            let page = 1
+            chunks.forEach((chunk: Statement[]) => {
+                const form = new K4Form('K4-2020P4', page++,this.sruInfo?.id || '', this.createDate, chunk);
+                forms.push(form);
+            });
+    
+            let formData: string[] = []
+            forms.forEach((f: K4Form) =>  {
+                const lines = f.generateLines()
+                formData = formData.concat(lines);                
+            }); 
+            formData.push('#FIL_SLUT');   
+            files.push(formData);        
+        })
+
+        return files;
     }
     
 }
