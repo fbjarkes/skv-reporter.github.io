@@ -163,6 +163,9 @@ describe('SRU Files', () => {
             const statements = sru.getStatements();
             expect(statements).to.be.of.length(1);
         });
+
+        it('should throw error when including trade dates for wrong tax year');
+        it('should throw error when missing FX rate for trade which must be converted');
     });
 
     describe('K4 forms', () => {
@@ -247,6 +250,7 @@ describe('SRU Files', () => {
 
         });
         
+        it('should calculate totals for each type');
        
 
         // it('should throw exception when more than 9 TYPE A statements', () => {

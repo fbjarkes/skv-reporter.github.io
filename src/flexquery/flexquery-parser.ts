@@ -1,6 +1,8 @@
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
 import parser from 'fast-xml-parser';
+import Ajv, {JSONSchemaType} from "ajv"
+
 import { logger } from '../logging';
 import { TradeType } from '../types/trade';
 import { setTradeEntryDates } from './utils';
@@ -46,6 +48,44 @@ interface FQRate {
     _rate: number;
 }
 
+const ajv = new Ajv()
+// const schema: JSONSchemaType<FQTrade> = {
+//     type: "object",
+//     properties: {
+//       _currency: {type: "string"},
+//       _assetCategory: {type: "string"},
+//       _symbol: {type: "string"}
+//     },
+//     requires: ["_currency"],
+//     //required: ['_currency', '_assetCategory', '_symbol', '_tradeDate', '_tradeTime', '_quantity', '_proceeds', '_ibCommission', 
+//     //    '_closePrice', '_openCloseIndicator', '_buySell', '_transactionType', '_cost', '_fifoPnlRealized'],
+//     additionalProperties: false
+// }
+const schema = {
+    type: "object",
+    properties: {
+        _currency: {type: "string"},
+        _assetCategory: {type: "string"},        
+        _symbol: {type: "string"},
+        _tradeTime: {type: "string"},
+        _quantity: {type: "string"},
+        _proceeds: {type: "string"},
+        _ibCommission: {type: "string"},
+        _closePrice: {type: "string"},
+        _openCloseIndicator: {type: "string"},
+        _buySell: {type: "string"},
+        _transactionType: {type: "string"},
+        _cost: {type: "string"},
+        _fifoPnlRealized: {type: "string"},
+    },
+    required: ['_currency', '_assetCategory', '_symbol', '_tradeDate', '_tradeTime', '_quantity', '_proceeds', '_ibCommission', 
+        '_closePrice', '_openCloseIndicator', '_buySell', '_transactionType', '_cost', '_fifoPnlRealized'],
+    additionalProperties: true
+} 
+
+const validate = ajv.compile(schema)
+
+// TODO: move to utils
 const addCalculatedPairs = (ratesByDate:  Map<string, Map<string, number>>) => {
     // For each day:
     //  1. get SEK/USD rate
@@ -81,6 +121,7 @@ export class FlexQueryParser {
     private rates: Map<string, Map<string, number>> = new Map();
     private trades: TradeType[] = [];
 
+    // TODO: move to utils
     toDateString(tradeDate: string, tradeTime: string): string {
         // TODO: default to 'New_York/America' tz?
         if (!tradeTime) {
@@ -110,6 +151,16 @@ export class FlexQueryParser {
         if (xmlData.FlexQueryResponse.FlexStatements.FlexStatement.Trades.Trade) {
             xmlData.FlexQueryResponse.FlexStatements.FlexStatement.Trades.Trade.forEach((item: FQTrade) => {
                 if (item._openCloseIndicator === 'C' || item._openCloseIndicator === 'O') {
+                    if (!validate(item)) {
+                        const messages: string[] = [];
+                        validate.errors?.forEach(e => {
+                            console.log(e.params, e.message);
+                            messages.push(`${e.message?.toString()}`);
+                     
+                            
+                        });
+                        throw new Error(`Invalid FlexStatement.Trades.Trade: ${messages.join(' ')}`);
+                    }
                     const t = new TradeType();
                     t.symbol = item._symbol;
                     t.securityType = item._assetCategory;

@@ -5,6 +5,7 @@ import { FlexQueryParser } from './flexquery-parser';
 
 chai.use(chaiAsPromised);
 
+
 describe('FlexQueryParser', () => {
     let flexParser: FlexQueryParser;
 
@@ -113,4 +114,13 @@ describe('FlexQueryParser', () => {
         expect(trades[0].direction).to.equal('SHORT');
         expect(trades[0].transactionType).to.equal('ExchTrade');
     });
+
+    it('should throw exception if required fields are missing in XML data', async () => {
+        const testFileData = await fs.readFile('test/fixtures/erroneous.xml', 'utf8');
+        
+        //const trades = flexParser.getAllTrades();
+
+        expect(() => flexParser.parse(testFileData)).to.throw(/assetCategory/);
+    });
+
 });
