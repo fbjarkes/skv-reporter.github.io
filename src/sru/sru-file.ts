@@ -13,6 +13,7 @@ export class SRUInfo {
     mail?: string;
     code?: string;
     city?: string;
+    taxYear?: number;
 }   
 
 export class SRUFile {
@@ -51,14 +52,20 @@ export class SRUFile {
         const statements: Statement[] = [];
         this.trades.forEach((trade: TradeType) => {            
             let rate: number | undefined = 1;
+            let paid, received;
+
+            if (this.sruInfo?.taxYear && this.sruInfo?.taxYear !== Number(trade.exitDateTime.substring(0, 4))) {
+                throw new Error(`Unexpected statement for tax year ${this.sruInfo?.taxYear}`);
+            }
+
             if (trade.currency !== 'SEK') {
                 const key = trade.exitDateTime.substring(0, 10);
                 rate = this.fxRates.get(key)?.get('USD/SEK');
                 if (!rate) {
                     throw new Error(`Missing USD/SEK rate for ${key}`);
                 }
-            } 
-            let paid, received;
+            }             
+            
             if (trade.direction === 'SHORT') {
                 paid = (trade.proceeds + trade.commission) * rate;
                 received = trade.cost * rate;

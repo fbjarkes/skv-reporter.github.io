@@ -117,9 +117,6 @@ describe('FlexQueryParser', () => {
 
     it('should throw exception if required fields are missing in XML data', async () => {
         const testFileData = await fs.readFile('test/fixtures/erroneous.xml', 'utf8');
-        
-        //const trades = flexParser.getAllTrades();
-
         expect(() => flexParser.parse(testFileData)).to.throw(/assetCategory/);
     });
 
