@@ -180,9 +180,21 @@ describe('SRU Files', () => {
             const sru = new SRUFile(fxRates, [t1, t2], {taxYear: 2021});
             expect(() => sru.getStatements()).to.throw(/statement for tax year 2021/);
         });
-        // it('should throw error when missing FX rate for trade which must be converted', () => {
+        it('should throw error when missing FX rate for trade which must be converted', () => {
+            const t1 = new TradeType(); 
+            t1.exitDateTime = '2020-01-10';
+            t1.symbol = 'SPY';              
+            t1.securityType = 'STK';                
+            t1.pnl = 1;
+            const t2 = new TradeType(); 
+            t2.exitDateTime = '2020-01-11';
+            t2.symbol = 'SPY';              
+            t2.securityType = 'STK';                
+            t2.pnl = 1; 
 
-        // });
+            const sru = new SRUFile(fxRates, [t1, t2]);
+            expect(() => sru.getStatements()).to.throw('Missing USD/SEK rate for 2020-01-11');
+        });
     });
 
     describe('K4 forms', () => {
