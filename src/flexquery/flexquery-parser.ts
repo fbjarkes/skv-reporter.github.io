@@ -7,7 +7,7 @@ import { logger } from '../logging';
 import { TradeType } from '../types/trade';
 import { setTradeEntryDates } from './utils';
 
-const FQ_DATETIME_FORMAT = 'yyyyMMdd HHmmss'; // TODO: To be configurable in .env?
+const FQ_DATETIME_FORMAT = 'yyyyMMdd;HHmmss'; // TODO: To be configurable in .env?
 const FQ_DATE_FORMAT = 'yyyyMMdd';
 const DATETIME_FORMAT = 'yyyy-MM-dd HH:mm';
 const DATE_FORMAT = 'yyyy-MM-dd';
@@ -19,8 +19,7 @@ interface FQTrade {
     _fxRateToBase: number;
     _symbol: string;
     _description: string;
-    _tradeDate: string;
-    _tradeTime: string;
+    _dateTime: string;
     _quantity: number;
     _tradePrice: number;
     _proceeds: number;
@@ -49,25 +48,14 @@ interface FQRate {
 }
 
 const ajv = new Ajv()
-// const schema: JSONSchemaType<FQTrade> = {
-//     type: "object",
-//     properties: {
-//       _currency: {type: "string"},
-//       _assetCategory: {type: "string"},
-//       _symbol: {type: "string"}
-//     },
-//     requires: ["_currency"],
-//     //required: ['_currency', '_assetCategory', '_symbol', '_tradeDate', '_tradeTime', '_quantity', '_proceeds', '_ibCommission', 
-//     //    '_closePrice', '_openCloseIndicator', '_buySell', '_transactionType', '_cost', '_fifoPnlRealized'],
-//     additionalProperties: false
-// }
+
 const schema = {
     type: "object",
     properties: {
         _currency: {type: "string"},
         _assetCategory: {type: "string"},        
         _symbol: {type: "string"},
-        _tradeTime: {type: "string"},
+        _dateTime: {type: "string"},
         _quantity: {type: "string"},
         _proceeds: {type: "string"},
         _ibCommission: {type: "string"},
@@ -78,8 +66,8 @@ const schema = {
         _cost: {type: "string"},
         _fifoPnlRealized: {type: "string"},
     },
-    required: ['_currency', '_assetCategory', '_symbol', '_tradeDate', '_tradeTime', '_quantity', '_proceeds', '_ibCommission', 
-        '_closePrice', '_openCloseIndicator', '_buySell', '_transactionType', '_cost', '_fifoPnlRealized'],
+    required: ['_currency', '_assetCategory', '_symbol', '_dateTime', '_quantity', '_proceeds', '_ibCommission', 
+        '_closePrice', '_openCloseIndicator', '_buySell', '_transactionType', '_cost', '_fifoPnlRealized'],    
     additionalProperties: true
 } 
 
@@ -122,13 +110,9 @@ export class FlexQueryParser {
     private trades: TradeType[] = [];
 
     // TODO: move to utils
-    toDateString(tradeDate: string, tradeTime: string): string {
-        // TODO: default to 'New_York/America' tz?
-        if (!tradeTime) {
-            tradeTime = '160000';
-        }
-        const t = tradeDate + ' ' + tradeTime;
-        const dt = parse(t, FQ_DATETIME_FORMAT, new Date());
+    toDateString(dateTime: string): string {
+        // TODO: default to 'New_York/America' tz?        
+        const dt = parse(dateTime, FQ_DATETIME_FORMAT, new Date());
         const str = format(dt, DATETIME_FORMAT);
         return str;
     }
@@ -179,11 +163,11 @@ export class FlexQueryParser {
 
                     if (item._openCloseIndicator === 'C') {
                         t.exitPrice = Number(item._tradePrice);
-                        t.exitDateTime = this.toDateString(item._tradeDate, item._tradeTime);
+                        t.exitDateTime = this.toDateString(item._dateTime);
                         t.direction = item._quantity < 0 ? 'LONG' : 'SHORT';
                     } else {
                         t.entryPrice = Number(item._tradePrice);
-                        t.entryDateTime = this.toDateString(item._tradeDate, item._tradeTime);
+                        t.entryDateTime = this.toDateString(item._dateTime);
                         t.direction = item._quantity > 0 ? 'LONG' : 'SHORT';
                     }
                     this.trades.push(t);

@@ -1,0 +1,25 @@
+<FlexQueryResponse queryName="Simple 1" type="AF">
+<FlexStatements count="1">
+<FlexStatement accountId="U12345678" fromDate="20150203" toDate="20150206" period="" whenGenerated="20150207 04:04:49">
+<Trades>
+
+<Trade currency="SEK" assetCategory="FUT" fxRateToBase="0.10294" symbol="OMXS300C" description="OMXS30 20MAR20" reportDate="20200225" tradeDate="20200225" transactionType="ExchTrade" quantity="-1" tradePrice="1786.5" proceeds="178650" ibCommission="-12" ibCommissionCurrency="SEK" closePrice="1764.75" fifoPnlRealized="0" buySell="SELL" cost="-178638" openCloseIndicator="O" openDateTime="" />
+<Trade currency="SEK" assetCategory="FUT" fxRateToBase="0.10294" symbol="OMXS300C" description="OMXS30 20MAR20" reportDate="20200225" tradeDate="20200225" transactionType="ExchTrade" quantity="1" tradePrice="1788.25" proceeds="-178825" ibCommission="-12" ibCommissionCurrency="SEK" closePrice="1764.75" fifoPnlRealized="-199" buySell="BUY" cost="178638" openCloseIndicator="C" openDateTime="" />
+
+<Trade currency="SEK" assetCategory="FUT" fxRateToBase="0.10352" symbol="OMXS300C" description="OMXS30 20MAR20" reportDate="20200227" tradeDate="20200227" transactionType="ExchTrade" quantity="-1" tradePrice="1731.75" proceeds="173175" ibCommission="-12" ibCommissionCurrency="SEK" closePrice="1721" fifoPnlRealized="0" buySell="SELL" cost="-173163" openCloseIndicator="O" openDateTime="" />
+<Trade currency="SEK" assetCategory="FUT" fxRateToBase="0.10352" symbol="OMXS300C" description="OMXS30 20MAR20" reportDate="20200227" tradeDate="20200227" transactionType="ExchTrade" quantity="1" tradePrice="1735" proceeds="-173500" ibCommission="-12" ibCommissionCurrency="SEK" closePrice="1721" fifoPnlRealized="-349" buySell="BUY" cost="173163" openCloseIndicator="C" openDateTime="" />
+
+<Trade currency="SEK" assetCategory="FUT" fxRateToBase="0.10352" symbol="OMXS300C" description="OMXS30 20MAR20" reportDate="20200227" tradeDate="20200227" transactionType="ExchTrade" quantity="-1" tradePrice="1725.5" proceeds="172550" ibCommission="-12" ibCommissionCurrency="SEK" closePrice="1721" fifoPnlRealized="0" buySell="SELL" cost="-172538" openCloseIndicator="O" openDateTime="" />
+<Trade currency="SEK" assetCategory="FUT" fxRateToBase="0.10352" symbol="OMXS300C" description="OMXS30 20MAR20" reportDate="20200227" tradeDate="20200227" transactionType="ExchTrade" quantity="1" tradePrice="1718" proceeds="-171800" ibCommission="-12" ibCommissionCurrency="SEK" closePrice="1721" fifoPnlRealized="726" buySell="BUY" cost="172538" openCloseIndicator="C" openDateTime="" />
+
+
+</Trades>
+<ConversionRates>
+	<ConversionRate reportDate="20200225" fromCurrency="SEK" toCurrency="USD" rate="0.10294" />
+	<ConversionRate reportDate="20200226" fromCurrency="SEK" toCurrency="USD" rate="0.10271" />
+	<ConversionRate reportDate="20200227" fromCurrency="SEK" toCurrency="USD" rate="0.10352" />
+</ConversionRates>
+
+</FlexStatement>
+</FlexStatements>
+</FlexQueryResponse>
