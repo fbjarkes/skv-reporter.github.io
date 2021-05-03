@@ -5,14 +5,16 @@ class OpenTrade {
     
     symbol = '';
     costBasis = 0;
+    tradeOpenPrice = 0;
     quantity = 0
     date = '';
 
-    constructor(date = '', symbol = '', quantity = 0, costBasis = 0) {
+    constructor(date = '', symbol = '', quantity = 0, costBasis = 0, tradeOpenPrice = 0) {
         this.date = date;
         this.symbol = symbol;
         this.quantity = quantity;
         this.costBasis = costBasis;
+        this.tradeOpenPrice = tradeOpenPrice;
     }
 }
 
@@ -29,7 +31,8 @@ export const setTradeEntryDates = (trades: TradeType[]): void => {
                     symbol: t.symbol,
                     costBasis: t.quantity * t.entryPrice,
                     quantity: t.quantity,
-                    date: t.entryDateTime
+                    date: t.entryDateTime,
+                    tradeOpenPrice: t.entryPrice,
                 }
                 openTrades.set(t.symbol, newOpen);
             }                        
@@ -38,22 +41,11 @@ export const setTradeEntryDates = (trades: TradeType[]): void => {
             const open = openTrades.get(t.symbol);
             if (open) {
                 t.entryDateTime = open.date;
+                t.entryPrice = open.tradeOpenPrice;
                 open.quantity += t.quantity;
                 if (open.quantity === 0) {
                     openTrades.delete(t.symbol);        
-                }
-                // if (t.direction === 'SHORT') {                    
-                //     if (open.quantity > 0) {
-                //         // TODO: flip to LONG
-                //     }                    
-                //     // if (open.quantity + t.quantity >= 0) {
-                //     //     openTrades.delete(t.symbol);
-                //     // } 
-                // } else {
-                //     if (open.quantity + t.quantity <= 0) {
-                //         openTrades.delete(t.symbol);
-                //     } 
-                // }                
+                }               
             }            
         }
     })
