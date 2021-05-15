@@ -17,6 +17,7 @@ export class TradeType {
     commission = 0;
     transactionType = '';
     openClose = '';
+    id = 0;
 
     constructor(symbol = '', qty = 0, entry = 0, exit= 0, entryDate = '', exitDate = '', openClose = '', direction = '') {
         this.symbol = symbol;
@@ -27,6 +28,7 @@ export class TradeType {
         this.exitDateTime = exitDate;
         this.openClose = openClose;
         this.direction = direction;
+        this.id = Math.random();
     }
 
     public toString(): string {

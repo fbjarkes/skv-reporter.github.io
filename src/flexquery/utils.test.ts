@@ -41,4 +41,19 @@ describe('Utils', () => {
         expect(trades[5].entryDateTime).to.equal('2020-02-02');
         expect(trades[5].entryPrice).to.equal(260);
     });
+
+    // it('should have a unique id to relate closing trades to the opening trade', () => {
+    //     const trades = [
+    //         new TradeType('SPY', 100, 250, 0, '2020-01-01', '', 'O', 'LONG'),
+    //         new TradeType('SPY', 100, 0, 260, '', '2020-01-03', 'C', 'LONG'),
+    //         new TradeType('SPY', 100, 0, 270, '', '2020-01-04', 'C', 'LONG'),
+    //         new TradeType('SPY', -100, 260, 0, '2020-02-02', '', 'O', 'LONG'),
+    //         new TradeType('SPY', 100, 0, 250, '', '2020-02-03', 'C', 'SHORT'),
+    //     ];
+    //     setTradeEntryDates(trades);
+
+    //     expect(trades[0].positionId).to.equal(trades[1].positionId);
+    //     expect(trades[0].positionId).to.equal(trades[2].positionId);
+    //     expect(trades[3].positionId).to.equal(trades[4].positionId);
+    // })
 });
