@@ -1,35 +1,52 @@
 import React, { ReactElement } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Grid, FormGroup, FormControlLabel, Button} from '@material-ui/core';
+import { Grid, FormGroup, FormControlLabel, Button, Box, Checkbox} from '@material-ui/core';
 import styles from '../styles/Home.module.css';
-import { promises as fs } from 'fs';
 import { TradeType } from '../types/trade';
 import { TradesTable } from '../components/trades-table';
 
-interface HomeProps {
-    foo: string;
-}
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-      flexGrow: 1,
+    main: {
+        margin: theme.spacing(1, 1, 4, 1),
     },
-    paper: {
-      padding: theme.spacing(2),
-      textAlign: 'center',
-      color: theme.palette.text.secondary,
+    table: {
+        margin: theme.spacing(1, 2, 0, 2),
     },
+    filters: {        
+        display: 'flex',        
+    },
+    buttonUpload: {
+        margin: theme.spacing(0, 2, 1, 0)
+    },
+    buttonChoose: {
+        margin: theme.spacing(1, 0, 0, 0)
+    },
+    fileName: {
+        padding: theme.spacing(1, 5, 0, 2)
+    }
   }));
 
 
 
-const Home = (props: HomeProps) => {
+const Home = () : any => {
     const classes = useStyles();    
     const [state, setState] = React.useState({
-        selectedFile: '',
+        selectedFile: null,
         loaded: 0
     })
     const [trades, setTrades] = React.useState<TradeType[]>([]);
+    const [filters, setFilters] = React.useState({
+        long: true,
+        short: true,
+        equities: true,
+        options: true,
+        futures: true,
+    });
+    
+    const handleFiltersChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setFilters({ ...filters, [event.target.name]: event.target.checked });
+    };
 
     const handleChange = (event: any) => {        
         //setState({ ...state, [event.target.name]: event.target.checked });
@@ -65,18 +82,28 @@ const Home = (props: HomeProps) => {
     return (
         <>            
             <Grid container justify="center" direction="row">             
-                <Grid item xs={12}>
-                    <FormGroup row>
-                        {/* <FormControlLabel labelPlacement="start" label="LONG:" control={<Checkbox checked={state.checkedLong} onChange={handleChange} name="checkedLong" />} />
-                        <FormControlLabel labelPlacement="start" label="SHORT:" control={<Checkbox checked={state.checkedShort} onChange={handleChange} name="checkedShortc" />} /> */}
-                        <input type="file" name="file" onChange={handleChange} />
-                        <Button variant="contained" onClick={submit}>Upload</Button>
-                    </FormGroup>
+                <Grid item xs={12} >
+                    <Box display="flex" className={classes.main}>
+                        <Box display="flex">
+                            <label htmlFor="button-choose">
+                                <input id="button-choose" name="buttonChoose" style={{ display: 'none' }} type="file" onChange={handleChange} />
+                                <Button className="buttonChoose" variant="contained" component="span">Choose File</Button>
+                            </label>
+                            <Box flexGrow={1} className={classes.fileName}>{state.selectedFile === null ? '' : state.selectedFile.name}</Box>
+                            <Button variant="contained" onClick={submit} className={classes.buttonUpload} disabled={!state.selectedFile}>Upload</Button>                             
+                        </Box>                        
+                        <Box display="flex" justifyContent="flex-end">
+                            <FormControlLabel control={<Checkbox checked={filters.long} onChange={handleFiltersChange} name="long" color="primary" />} label="Long" />
+                            <FormControlLabel control={<Checkbox checked={filters.short} onChange={handleFiltersChange} name="short" color="primary" />} label="Short" />
+                            <FormControlLabel control={<Checkbox checked={filters.equities} onChange={handleFiltersChange} name="equities" color="primary" />} label="Equities" />
+                            <FormControlLabel control={<Checkbox checked={filters.options} onChange={handleFiltersChange} name="options" color="primary" />} label="Options" />
+                            <FormControlLabel control={<Checkbox checked={filters.futures} onChange={handleFiltersChange} name="futures" color="primary" />} label="Futures" />
+                        </Box>
+                    </Box>   
                 </Grid>
-                <Grid item xs={12}>
-                    <TradesTable data={trades}/>
+                <Grid item xs={12}  >
+                    <TradesTable data={trades} />
                 </Grid>
-  
             </Grid>
         </>
     );

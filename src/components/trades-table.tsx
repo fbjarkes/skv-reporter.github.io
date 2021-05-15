@@ -1,24 +1,27 @@
 import { DataGrid } from '@material-ui/data-grid';
+import { makeStyles } from '@material-ui/core/styles';
 import { ReactElement } from "react";
 import { TradeType } from "../types/trade";
+import styles from '../styles/Home.module.css';
 
-const columns = [
-{ field: 'direction', headerName: 'L/S', width: 60 },    
-{ field: 'symbol', headerName: 'Symbol', width: 130 },
-{ field: 'quantity', headerName: 'Quantity', width: 70 },
-{ field: 'entryPrice', headerName: 'Open price', width: 130 },
-{ field: 'exitPrice', headerName: 'Close price', width: 130 },
-{ field: 'entryDateTime', headerName: 'Entry date', width: 130 },
-{ field: 'exitDateTime', headerName: 'Exit date', width: 130 },
-// {
-//     field: 'fullName',
-//     headerName: 'Full name',
-//     description: 'This column has a value getter and is not sortable.',
-//     sortable: false,
-//     width: 160,
-//     valueGetter: (params: any) =>
-//     `${params.getValue('firstName') || ''} ${params.getValue('lastName') || ''}`,
-// },
+const useStyles = makeStyles((theme) => ({    
+    table: {
+        margin: theme.spacing(1, 2, 0, 2),
+    }
+  }));
+
+
+const columns = [   
+    { field: 'id', headerName: 'id', width: 80 },
+    { field: 'symbol', headerName: 'Symbol', width: 200 },
+    { field: 'quantity', headerName: 'Qty', width: 100 },
+    { field: 'entryPrice', headerName: 'Open', width: 130 },
+    { field: 'exitPrice', headerName: 'Close', width: 130 },
+    { field: 'pnl', headerName: 'PnL', width: 120, type: 'number' },
+    { field: 'entryDateTime', headerName: 'Entry date', width: 150 },
+    { field: 'exitDateTime', headerName: 'Exit date', width: 150 },
+    { field: 'direction', headerName: 'L/S', width: 82 }, 
+    { field: 'securityType', headerName: 'Type', width: 120 }, 
 ];
 
 interface TradeProps {
@@ -26,11 +29,12 @@ interface TradeProps {
 }
 
 export const TradesTable = (props: TradeProps): ReactElement => {
+    const classes = useStyles();    
     
     return (
         <>  
-            <div style={{ height: 400, width: '100%' }}>
-                <DataGrid rows={props.data} columns={columns} pageSize={10} checkboxSelection />
+            <div style={{ display: 'flex', height: 800,  width: '100%', flexGrow: 1 }}>
+                <DataGrid rows={props.data} columns={columns} pageSize={100} checkboxSelection className={classes.table} />
             </div>
         </>
     );

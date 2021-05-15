@@ -1,5 +1,3 @@
-import { timeStamp } from "node:console";
-
 export class TradeType {
     entryDateTime = '';
     exitDateTime = '';
