@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 const columns = [   
-    { field: 'id', headerName: 'id', width: 80 },
+    { field: 'positionId', headerName: 'Trade', width: 100 },
     { field: 'symbol', headerName: 'Symbol', width: 200 },
     { field: 'quantity', headerName: 'Qty', width: 100 },
     { field: 'entryPrice', headerName: 'Open', width: 130 },
@@ -20,6 +20,7 @@ const columns = [
     { field: 'pnl', headerName: 'PnL', width: 120, type: 'number' },
     { field: 'entryDateTime', headerName: 'Entry date', width: 150, type: 'date'},
     { field: 'exitDateTime', headerName: 'Exit date', width: 150, type: 'date' },
+    { field: 'durationMin', headerName: 'Duration', width: 140, type: 'number' }, 
     { field: 'direction', headerName: 'L/S', width: 82 }, 
     { field: 'securityType', headerName: 'Type', width: 120 }, 
 ];

@@ -1,4 +1,5 @@
 import parse from 'date-fns/parse';
+import { logger } from '../logging';
 import { TradeType } from "../types/trade";
 
 
@@ -57,7 +58,9 @@ export const connectTrades = (trades: TradeType[]): void => {
             const open = openTrades.get(t.symbol);
             if (open) {
                 t.entryDateTime = open.date;
-                t.entryPrice = open.tradeOpenPrice;                
+                t.entryPrice = open.tradeOpenPrice;
+                t.positionId = open.id;                
+                t.durationMin = Number.MAX_SAFE_INTEGER; // To denote trades not closed (finalized)
                 open.addTrade(t);
                 if (open.quantity === 0) {
                     open.finalize();
@@ -66,4 +69,7 @@ export const connectTrades = (trades: TradeType[]): void => {
             }            
         }
     })
+    if (openTrades.size > 0) {
+        logger.info(`Found ${openTrades.size} trades still open`);
+    }    
 }

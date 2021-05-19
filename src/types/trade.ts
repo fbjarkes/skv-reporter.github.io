@@ -18,7 +18,7 @@ export class TradeType {
     openClose = '';
     id = 0;
     positionId = 0;
-    durationMin = 0;
+    durationMin = -1;
 
     constructor(symbol = '', qty = 0, entry = 0, exit= 0, entryDate = '', exitDate = '', openClose = '', direction = '') {
         this.symbol = symbol;
