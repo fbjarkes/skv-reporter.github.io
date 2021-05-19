@@ -1,4 +1,5 @@
 export class TradeType {
+
     entryDateTime = '';
     exitDateTime = '';
     symbol = '';
@@ -16,6 +17,7 @@ export class TradeType {
     transactionType = '';
     openClose = '';
     id = 0;
+    positionId = 0;
 
     constructor(symbol = '', qty = 0, entry = 0, exit= 0, entryDate = '', exitDate = '', openClose = '', direction = '') {
         this.symbol = symbol;

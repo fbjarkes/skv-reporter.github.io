@@ -8,32 +8,40 @@ class OpenTrade {
     tradeOpenPrice = 0;
     quantity = 0
     date = '';
+    id = 0;
+    trades: TradeType[] = [];
 
-    constructor(date = '', symbol = '', quantity = 0, costBasis = 0, tradeOpenPrice = 0) {
-        this.date = date;
-        this.symbol = symbol;
-        this.quantity = quantity;
-        this.costBasis = costBasis;
-        this.tradeOpenPrice = tradeOpenPrice;
+    constructor(trade: TradeType, id = 0) {
+        this.date = trade.entryDateTime;
+        this.symbol = trade.symbol;
+        this.quantity = trade.quantity;
+        this.costBasis = trade.quantity * trade.entryPrice;
+        this.tradeOpenPrice = trade.entryPrice;
+        this.id = id;
+        this.trades.push(trade);
+    }
+
+    finalize(): void {
+        this.trades.forEach(t => t.positionId = this.id)
+    }
+
+    addTrade(t: TradeType):  void {
+        this.quantity += t.quantity;
+        this.trades.push(t);
     }
 }
 
 
-export const setTradeEntryDates = (trades: TradeType[]): void => {
+export const connectTrades = (trades: TradeType[]): void => {
     const openTrades: Map<string, OpenTrade> = new Map();
+    let positions = 1;
     trades.forEach(t => {
         if (t.openClose === 'O') {                        
             const ot = openTrades.get(t.symbol);
             if (ot) {
-                ot.quantity += t.quantity;
-            } else {
-                const newOpen: OpenTrade = {
-                    symbol: t.symbol,
-                    costBasis: t.quantity * t.entryPrice,
-                    quantity: t.quantity,
-                    date: t.entryDateTime,
-                    tradeOpenPrice: t.entryPrice,
-                }
+                ot.addTrade(t);
+            } else {             
+                const newOpen = new OpenTrade(t, positions++);
                 openTrades.set(t.symbol, newOpen);
             }                        
         }
@@ -42,9 +50,10 @@ export const setTradeEntryDates = (trades: TradeType[]): void => {
             if (open) {
                 t.entryDateTime = open.date;
                 t.entryPrice = open.tradeOpenPrice;
-                open.quantity += t.quantity;
+                open.addTrade(t);
                 if (open.quantity === 0) {
-                    openTrades.delete(t.symbol);        
+                    open.finalize();
+                    openTrades.delete(t.symbol);
                 }               
             }            
         }

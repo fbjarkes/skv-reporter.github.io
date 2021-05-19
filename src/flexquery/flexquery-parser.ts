@@ -1,11 +1,11 @@
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
 import parser from 'fast-xml-parser';
-import Ajv, {JSONSchemaType} from "ajv"
+import Ajv from "ajv"
 
 import { logger } from '../logging';
 import { TradeType } from '../types/trade';
-import { setTradeEntryDates } from './utils';
+import { connectTrades } from './utils';
 
 const FQ_DATETIME_FORMAT = 'yyyyMMdd;HHmmss'; // TODO: To be configurable in .env?
 const FQ_DATE_FORMAT = 'yyyyMMdd';
@@ -196,7 +196,7 @@ export class FlexQueryParser {
         }
 
         // Add Entry dates for closing trades
-        setTradeEntryDates(this.trades);
+        connectTrades(this.trades);
 
         return this.trades.filter(t => t.openClose === 'C');
     }
