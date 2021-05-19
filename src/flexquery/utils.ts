@@ -1,3 +1,4 @@
+import parse from 'date-fns/parse';
 import { TradeType } from "../types/trade";
 
 
@@ -22,7 +23,14 @@ class OpenTrade {
     }
 
     finalize(): void {
-        this.trades.forEach(t => t.positionId = this.id)
+        this.trades.forEach(t => {
+            t.positionId = this.id
+            if (t.entryDateTime && t.exitDateTime) {
+                const t0 = parse(t.entryDateTime, 'yyyy-MM-dd HH:mm', new Date());
+                const t1 = parse(t.exitDateTime, 'yyyy-MM-dd HH:mm', new Date());
+                t.durationMin = Math.abs(t1.getTime() - t0.getTime()) / (1000 * 60);
+            }
+        })
     }
 
     addTrade(t: TradeType):  void {
@@ -49,7 +57,7 @@ export const connectTrades = (trades: TradeType[]): void => {
             const open = openTrades.get(t.symbol);
             if (open) {
                 t.entryDateTime = open.date;
-                t.entryPrice = open.tradeOpenPrice;
+                t.entryPrice = open.tradeOpenPrice;                
                 open.addTrade(t);
                 if (open.quantity === 0) {
                     open.finalize();
