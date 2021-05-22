@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { AppProps } from 'next/app';
 import Footer from '../components/footer';
 import styles from '../styles/App.module.css';
+import Header from '../components/header';
 
 const App = ({ Component, pageProps }: AppProps): React.ReactNode => {
     // const [style, setStyle] = useState<React.CSSProperties>({ visibility: 'hidden' })
@@ -26,7 +27,7 @@ const App = ({ Component, pageProps }: AppProps): React.ReactNode => {
             <div className={styles['app-container']}>
                 <ThemeProvider>
                     <div className={styles['content-container']}>
-                        {/* <Header /> */}
+                        <Header />
                         <Component {...pageProps} />
                     </div>
                     <Footer />

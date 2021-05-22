@@ -3,53 +3,51 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
 import AppBar from '@material-ui/core/AppBar';
 import { makeStyles } from '@material-ui/core/styles';
+import { Typography } from '@material-ui/core';
 import Link from 'next/link';
 
 const useStyles = makeStyles({
-    show: {
-        transform: 'translateY(0)',
-        transition: 'transform .5s',
+    
+    root: {
+        flexGrow: 1,
     },
-    hide: {
-        transform: 'translateY(-110%)',
-        transition: 'transform .5s',
+    title: {
+        flexGrow: 1,
     },
     toolbar: {
-        paddingLeft: '5%',
+
     },
     toolbarContent: {
-        paddingLeft: 70,
-    },
-    toolbarRight: {
-        right: 0,
-        position: 'absolute',
-        paddingRight: '5%',
-    },
+
+    }
 });
 
 export const Header = (): ReactElement => {
     const classes = useStyles();
 
     return (
-        <AppBar>
-            <Toolbar className={classes.toolbar}>
-                <div className={classes.toolbarContent}>
-                    <Link href="/">
-                        <Button variant="text" color="inherit">
-                            Home
-                        </Button>
-                    </Link>
-                    <Link href="/Stuff">
-                        <Button variant="text" color="inherit">
-                            Stuff
-                        </Button>
-                    </Link>
-                </div>
-                {/* <div className={classes.toolbarRight}>
-             
-        </div> */}
-            </Toolbar>
-        </AppBar>
+        <div className={classes.root}>
+            <AppBar position="static">
+                <Toolbar className={classes.toolbar} variant="dense">
+                    <Typography variant="h6" className={classes.title}>
+                    SKV Reporter
+                    </Typography>
+                    <div className={classes.toolbarContent}> 
+                        <Link href="/">
+                            <Button color="inherit">
+                                Stat
+                            </Button>
+                        </Link>
+                        <Link href="/sru">
+                            <Button color="inherit">
+                                SRU download
+                            </Button>
+                        </Link>                  
+                    </div>
+                
+                </Toolbar>
+            </AppBar>
+        </div>
     );
 };
 

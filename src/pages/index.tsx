@@ -1,7 +1,6 @@
-import React, { ReactElement } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Grid, FormGroup, FormControlLabel, Button, Box, TextField} from '@material-ui/core';
-import styles from '../styles/Home.module.css';
+import { Grid, FormControlLabel, Button, Box, TextField, Checkbox, Typography, Slider} from '@material-ui/core';
 import { TradeType } from '../types/trade';
 import { TradesTable } from '../components/trades-table';
 import { filter } from 'lodash';
@@ -14,18 +13,23 @@ const useStyles = makeStyles((theme) => ({
     },
     table: {
         margin: theme.spacing(1, 2, 0, 2),
+    },        
+    file: {
+        padding: theme.spacing(2, 5, 0, 2),
+        width: 300
     },
-    filters: {        
-        display: 'flex',        
+    dateFilter: {
+        padding: theme.spacing(2, 5, 0, 2),
     },
-    buttonUpload: {
-        margin: theme.spacing(0, 2, 1, 0)
+    directionFilter: {
+        padding: theme.spacing(2, 5, 0, 2),
     },
-    buttonChoose: {
-        margin: theme.spacing(1, 0, 0, 0)
+    typeFilter: {
+        padding: theme.spacing(2, 5, 0, 2),
     },
-    fileName: {
-        padding: theme.spacing(1, 5, 0, 2)
+    durationFilter: {
+        padding: theme.spacing(2, 5, 0, 2),
+        width: 400
     },
     container: {
         display: 'flex',
@@ -34,6 +38,9 @@ const useStyles = makeStyles((theme) => ({
       textField: {
         marginLeft: theme.spacing(1),
         marginRight: theme.spacing(1),
+        width: 200,
+    },
+    filePanel: {
         width: 200,
     }
   }));
@@ -78,6 +85,33 @@ const filterTrades = (t: TradeType, filters: any, start?: Date, end?: Date) : bo
 const setTradeStats = (trades: TradeType[]) => {
     console.log('Stats for ', trades.length);
 }
+
+const marks = [
+    {
+      value: 1,
+      label: '1',
+    },
+    {
+      value: 5,
+      label: '5',
+    },
+    {
+      value: 10,
+      label: '10',
+    },
+    {
+      value: 30,
+      label: '30',
+    },
+    {
+        value: 60,
+        label: '60',
+    },
+    {
+        value: 100,
+        label: 'All',
+      },
+  ];
 
 const Home = () : any => {
     const classes = useStyles();    
@@ -130,29 +164,38 @@ const Home = () : any => {
     return (
         <>            
             <Grid container justify="center" direction="row">             
-                <Grid item xs={12} >
-                    <Box display="flex" className={classes.main}>
-                        <Box display="flex">
-                            <label htmlFor="button-choose">
-                                <input id="button-choose" name="buttonChoose" style={{ display: 'none' }} type="file" onChange={handleChange} />
-                                <Button className="buttonChoose" variant="contained" component="span">Choose File</Button>
-                            </label>
-                            <Box flexGrow={1} className={classes.fileName}>{state.selectedFile?.name ?? ''}</Box>
+                <Grid item xs={12}>
+                    <Box display="flex" className="classes.header">
+                        <Box className="classes.filePanel" display="flex" flexDirection="column">
+                            <Box className={classes.file}>
+                                <label htmlFor="button-choose">
+                                    <input id="button-choose" name="buttonChoose" style={{ display: 'none' }} type="file" onChange={handleChange} />
+                                    <Button className="buttonChoose" variant="contained" component="span">Choose File</Button>
+                                </label>
+                            </Box>
+                            <Box flexGrow={1} className={classes.file}>{state.selectedFile?.name ?? ''}</Box>                            
                         </Box>                        
-                        <Box display="flex" justifyContent="flex-end">
+                        <Box className={classes.dateFilter}>
                             <form className={classes.container} noValidate>
                                 <TextField id="date" label="Entry Date" type="date" className={classes.textField} InputLabelProps={{shrink: true }} onChange={(e) => setEntryDateFilter(parse(e.target.value, 'yyyy-MM-dd', new Date()))}/>
                                 <TextField id="date" label="Exit Date" type="date" className={classes.textField} InputLabelProps={{shrink: true }} onChange={(e) => setExitDateFilter(parse(e.target.value, 'yyyy-MM-dd', new Date()))}/>
                             </form>
                         </Box>
-                        {/* <Box display="flex" justifyContent="flex-end">
-                            <FormControlLabel control={<Checkbox checked={filters.long} onChange={handleFiltersChange} name="long" color="primary" />} label="Long" />
+                        <Box className={classes.directionFilter} display="flex" flexDirection="column">                            
+                            <FormControlLabel control={<Checkbox checked={filters.long} onChange={handleFiltersChange} name="long" color="primary" />} label="Long" />                            
                             <FormControlLabel control={<Checkbox checked={filters.short} onChange={handleFiltersChange} name="short" color="primary" />} label="Short" />
+                            
+                        </Box>
+                        <Box className={classes.typeFilter} display="flex" flexDirection="column">
                             <FormControlLabel control={<Checkbox checked={filters.equities} onChange={handleFiltersChange} name="equities" color="primary" />} label="Equities" />
                             <FormControlLabel control={<Checkbox checked={filters.options} onChange={handleFiltersChange} name="options" color="primary" />} label="Options" />
                             <FormControlLabel control={<Checkbox checked={filters.futures} onChange={handleFiltersChange} name="futures" color="primary" />} label="Futures" />
-                        </Box> */}
-                    </Box>   
+                        </Box>
+                        <Box className={classes.durationFilter} display="flex" width="30%" flexDirection="column" >
+                            <Typography id="duration-slider" gutterBottom>Duration (min)</Typography>
+                            <Slider defaultValue={100} valueLabelDisplay="auto" marks={marks} step={null} />                            
+                        </Box>                        
+                    </Box>
                 </Grid>
                 <Grid item xs={12}  >
                     <TradesTable data={trades.filter(t => filterTrades(t, filters, entryDateFilter, exitDateFilter))} onFilterChange={setTradeStats} />
