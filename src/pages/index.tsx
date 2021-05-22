@@ -3,7 +3,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Grid, FormControlLabel, Button, Box, TextField, Checkbox, Typography, Slider} from '@material-ui/core';
 import { TradeType } from '../types/trade';
 import { TradesTable } from '../components/trades-table';
-import { filter } from 'lodash';
 import { filterTrades } from '../utils/helper';
 import parse from 'date-fns/parse';
 
@@ -48,12 +47,6 @@ const useStyles = makeStyles((theme) => ({
   }));
 
 
-
-
-const setTradeStats = (trades: TradeType[]) => {
-    console.log('Stats for ', trades.length);
-}
-
 const marks = [
     {
       value: 1,
@@ -81,13 +74,19 @@ const marks = [
       },
   ];
 
-const Home = () : any => {
+
+interface HomeProps {
+    trades: TradeType[];
+    handleTrades(trades: TradeType[]): void;
+}
+
+const Home = (props: HomeProps) : any => {
     const classes = useStyles();    
     const [state, setState] = React.useState<any>({
         selectedFile: undefined,
         loaded: 0
     })
-    const [trades, setTrades] = React.useState<TradeType[]>([]);
+    // const [trades, setTrades] = React.useState<TradeType[]>([]);
     const [entryDateFilter, setEntryDateFilter] = React.useState<Date>();
     const [exitDateFilter, setExitDateFilter] = React.useState<Date>();
     const [durationFilter, setDurationFilter] = React.useState<number>(100);
@@ -116,15 +115,15 @@ const Home = () : any => {
         const response = await fetch(`/api/uploadApi`, options); 
     
         if (response.status === 500) {
-            setTrades([]);
+            props.handleTrades([])
             // TODO: set status to error message?
         }
 
         if (response.status === 201) {              
             const trades = await response.json();
             // TODO: filter trades on checkbox states (LONG/SHORT only etc.)            
-            setTrades(trades);
-            setTradeStats(trades);
+            // setTrades(trades);
+            props.handleTrades(trades)
             // TODO: set informative status with number of trades etc.
         }
 
@@ -167,7 +166,7 @@ const Home = () : any => {
                     </Box>
                 </Grid>
                 <Grid item xs={12}  >
-                    <TradesTable data={trades.filter(t => filterTrades(t, filters, entryDateFilter, exitDateFilter, durationFilter))} onFilterChange={setTradeStats} />
+                    <TradesTable data={props.trades.filter(t => filterTrades(t, filters, entryDateFilter, exitDateFilter, durationFilter))}/>
                 </Grid>
             </Grid>
         </>

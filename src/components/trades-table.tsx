@@ -27,25 +27,16 @@ const columns = [
 
 interface TradeProps {
     data: TradeType[]
-    onFilterChange(trade: TradeType[]): void
 }
 
 
 export const TradesTable = (props: TradeProps): ReactElement => {
     const classes = useStyles();    
-
-    const filterChange = (data: any) => {
-        const trades = Array.from(data.visibleRows.values()) as TradeType[];
-        props.onFilterChange(trades);
-    }
-    const tester = () => {
-        console.log('HERE');
-    }
     
     return (
         <>  
             <div style={{ display: 'flex', height: 800,  width: '100%', flexGrow: 1 }}>
-                <DataGrid rows={props.data} columns={columns} pageSize={100} checkboxSelection className={classes.table} onFilterModelChange={filterChange} onPageChange={tester} />
+                <DataGrid rows={props.data} columns={columns} pageSize={100} checkboxSelection className={classes.table} />
             </div>
         </>
     );

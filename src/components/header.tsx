@@ -38,7 +38,7 @@ export const Header = (): ReactElement => {
                                 Stat
                             </Button>
                         </Link>
-                        <Link href="/sru">
+                        <Link href="/sru-download">
                             <Button color="inherit">
                                 SRU download
                             </Button>
