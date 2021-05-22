@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Grid, FormControlLabel, Button, Box, TextField, Checkbox, Typography, Slider} from '@material-ui/core';
 import { TradeType } from '../types/trade';
 import { TradesTable } from '../components/trades-table';
 import { filter } from 'lodash';
+import { filterTrades } from '../utils/helper';
 import parse from 'date-fns/parse';
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -47,40 +49,6 @@ const useStyles = makeStyles((theme) => ({
 
 
 
-const filterTrades = (t: TradeType, filters: any, start?: Date, end?: Date) : boolean=> {
-    if (!filters.long && t.direction === 'LONG') {
-        return false;
-    }
-    if (!filters.short && t.direction === 'SHORT') {
-        return false;
-    }
-    if (!filters.options && t.securityType === 'OPT'){
-        return false;
-    }
-    if (!filters.equities && t.securityType === 'STK'){
-        return false;
-    }
-    if (!filters.futures && t.securityType === 'FUT'){
-        return false;
-    }
-    
-    
-    if (start) {
-        const tradeStart = parse(t.entryDateTime.substring(0, 10),'yyyy-MM-dd', new Date());
-        if (tradeStart < start) {
-            return false;
-        }
-    }
-    if (end) {
-        const tradeEnd = parse(t.exitDateTime.substring(0, 10),'yyyy-MM-dd', new Date());
-        if (tradeEnd > end) {
-            return false;
-        }
-    }
-    
-    return true;
-}
-
 
 const setTradeStats = (trades: TradeType[]) => {
     console.log('Stats for ', trades.length);
@@ -122,6 +90,7 @@ const Home = () : any => {
     const [trades, setTrades] = React.useState<TradeType[]>([]);
     const [entryDateFilter, setEntryDateFilter] = React.useState<Date>();
     const [exitDateFilter, setExitDateFilter] = React.useState<Date>();
+    const [durationFilter, setDurationFilter] = React.useState<number>(100);
     const [filters, setFilters] = React.useState({
         long: true,
         short: true,
@@ -193,12 +162,12 @@ const Home = () : any => {
                         </Box>
                         <Box className={classes.durationFilter} display="flex" width="30%" flexDirection="column" >
                             <Typography id="duration-slider" gutterBottom>Duration (min)</Typography>
-                            <Slider defaultValue={100} valueLabelDisplay="auto" marks={marks} step={null} />                            
+                            <Slider defaultValue={durationFilter} valueLabelDisplay="auto" marks={marks} step={null} onChange={(e: any, value: number | number[]) => { setDurationFilter(value as number)}} />                            
                         </Box>                        
                     </Box>
                 </Grid>
                 <Grid item xs={12}  >
-                    <TradesTable data={trades.filter(t => filterTrades(t, filters, entryDateFilter, exitDateFilter))} onFilterChange={setTradeStats} />
+                    <TradesTable data={trades.filter(t => filterTrades(t, filters, entryDateFilter, exitDateFilter, durationFilter))} onFilterChange={setTradeStats} />
                 </Grid>
             </Grid>
         </>
