@@ -1,9 +1,20 @@
 import parse from 'date-fns/parse';
 import { TradeType } from "../types/trade";
+import { TradeStats } from '../types/tradestats';
+
+export type TradeFilters = {
+    long: boolean,
+    short: boolean,
+    equities: boolean,
+    options: boolean,
+    futures: boolean,
+    duration: number,
+    start?: Date,
+    end?: Date,
+  }
 
 
-
-export const filterTrades = (t: TradeType, filters: any, start?: Date, end?: Date, duration?: number) : boolean=> {
+export const filterTrades = (t: TradeType, filters: TradeFilters) : boolean => {
     if (!filters.long && t.direction === 'LONG') {
         return false;
     }
@@ -21,23 +32,39 @@ export const filterTrades = (t: TradeType, filters: any, start?: Date, end?: Dat
     }
     
     
-    if (start) {
+    if (filters.start) {
         const tradeStart = parse(t.entryDateTime.substring(0, 10),'yyyy-MM-dd', new Date());
-        if (tradeStart < start) {
+        if (tradeStart < filters.start) {
             return false;
         }
     }
-    if (end) {
+    if (filters.end) {
         const tradeEnd = parse(t.exitDateTime.substring(0, 10),'yyyy-MM-dd', new Date());
-        if (tradeEnd > end) {
+        if (tradeEnd > filters.end) {
             return false;
         }
     }
-    if (duration && duration < 100) {
-        if (t.durationMin > duration) {
+    if (filters.duration && filters.duration < 100) {
+        if (t.durationMin > filters.duration) {
             return false;
         }
     }
     
     return true;
+}
+
+
+export const calculateStates = (trades: TradeType[]) : TradeStats => {
+    const stats = new TradeStats();    
+    trades.forEach(t => {
+        if (t.pnl > 0) {
+            stats.winners++;
+            stats.totalWin += t.pnl
+        } else {
+            stats.losers++;
+            stats.totalLoss += t.pnl;
+        }
+    });
+
+    return stats;
 }

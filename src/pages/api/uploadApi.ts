@@ -38,6 +38,8 @@ export default async (req: NextApiRequestWithFormData, res: NextApiResponse<Trad
         console.log(`Processing file: ${blob.originalname} (${blob.size / 1024}kb)`);
         flexParser.parse(blob.buffer.toString('utf8'));
         const trades = flexParser.getClosingTrades();
+        const rates = flexParser.getConversionRates();
+        // TODO: save rates
         res.statusCode = 201;
         res.json(trades);
         res.end();        

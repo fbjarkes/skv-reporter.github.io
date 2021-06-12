@@ -4,7 +4,8 @@ import { AppProps } from 'next/app';
 import Footer from '../components/footer';
 import styles from '../styles/App.module.css';
 import Header from '../components/header';
-import { TradeType } from '../types/trade';
+import TradesProvider from '../trades-context';
+
 
 const App = ({ Component, pageProps }: AppProps): React.ReactNode => {
     // const [style, setStyle] = useState<React.CSSProperties>({ visibility: 'hidden' })
@@ -14,7 +15,6 @@ const App = ({ Component, pageProps }: AppProps): React.ReactNode => {
     //         jssStyles.parentElement?.removeChild(jssStyles);
     //     }
     // }, []);
-    const [trades, setTrades] = React.useState<TradeType[]>([]);
     
     React.useEffect(() => {
         // Remove the server-side injected CSS.
@@ -26,14 +26,17 @@ const App = ({ Component, pageProps }: AppProps): React.ReactNode => {
 
     return (
         <>
-            <div className={styles['app-container']}>
-                <ThemeProvider>
-                    <div className={styles['content-container']}>
-                        <Header />
-                        <Component {...pageProps} handleTrades={setTrades} trades={trades}/>
-                    </div>
-                    <Footer trades={trades}/>
-                </ThemeProvider>
+            <div className={styles['app-container']}>                
+                    <ThemeProvider>
+                        <div className={styles['content-container']}>
+                            <TradesProvider>
+                                <Header />
+                                <Component {...pageProps} />
+                                <Footer />
+                            </TradesProvider>
+                        </div>                        
+                    </ThemeProvider>
+                
             </div>
         </>
     );

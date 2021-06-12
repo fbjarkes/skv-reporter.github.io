@@ -1,8 +1,9 @@
 import { DataGrid } from '@material-ui/data-grid';
 import { makeStyles } from '@material-ui/core/styles';
-import { ReactElement } from "react";
+import { ReactElement, useContext } from "react";
 import { TradeType } from "../types/trade";
 import styles from '../styles/Home.module.css';
+import { TradesContext } from '../trades-context';
 
 const useStyles = makeStyles((theme) => ({    
     table: {
@@ -26,17 +27,20 @@ const columns = [
 ];
 
 interface TradeProps {
-    data: TradeType[]
+    data?: TradeType[]
 }
 
 
 export const TradesTable = (props: TradeProps): ReactElement => {
-    const classes = useStyles();    
-    
+    const classes = useStyles();
+    const { state } = useContext(TradesContext);    
+    // const trades = props.data ?? [];
+    const trades = state.filteredTrades ?? [];
+    console.log("Rendering with ", trades.length);
     return (
         <>  
             <div style={{ display: 'flex', height: 800,  width: '100%', flexGrow: 1 }}>
-                <DataGrid rows={props.data} columns={columns} pageSize={100} checkboxSelection className={classes.table} />
+                <DataGrid rows={trades} columns={columns} pageSize={100} checkboxSelection className={classes.table} />
             </div>
         </>
     );
