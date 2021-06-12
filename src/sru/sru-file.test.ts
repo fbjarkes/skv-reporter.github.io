@@ -280,5 +280,8 @@ describe('SRU Files', () => {
         });
         
         it('should calculate totals for each type');
+
+        it.skip('should do commodity futures in Type D section')
+        it.skip('should do index futures in Type A section')
     });
 });
