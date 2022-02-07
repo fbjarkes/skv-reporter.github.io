@@ -1,5 +1,5 @@
 {
-    "name": "myapp",
+    "name": "skv-reporter",
     "version": "0.1.0",
     "private": true,
     "scripts": {
@@ -9,7 +9,8 @@
         "test": "mocha -r ts-node/register src/**/*.test.ts",
         "coverage": "nyc --check-coverage --lines=70 mocha -r ts-node/register src/**/*.test.ts",
         "lint": "eslint src/**/*.ts",
-        "format": "eslint src/**/*.ts --fix"
+        "format": "eslint src/**/*.ts --fix",
+        "nuke": "rm -rfv dist coverage node_modules package-lock.json yarn.lock .nyc_output"
     },
     "dependencies": {
         "@material-ui/core": "^4.11.3",
@@ -19,7 +20,7 @@
         "@types/date-fns": "^2.6.0",
         "@types/dotenv": "^8.2.0",
         "@types/winston": "^2.4.4",
-        "ajv": "^8.1.0",
+        "ajv": "^8.10.0",
         "date-fns": "^2.20.2",
         "dotenv": "^8.2.0",
         "fast-xml-parser": "^3.19.0",

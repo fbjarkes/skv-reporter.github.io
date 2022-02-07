@@ -137,4 +137,6 @@ yarn-error.log*
 
 .nyc*
 
-
+# Custom
+main.ts
+SKV*.xml
