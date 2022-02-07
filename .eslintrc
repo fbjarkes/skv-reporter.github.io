@@ -1,6 +1,19 @@
 {
-  "parser": "@typescript-eslint/parser",
-  "extends": ["plugin:@typescript-eslint/recommended"],
-  "parserOptions": { "ecmaVersion": 2018, "sourceType": "module" },
-  "rules": {}
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:prettier/recommended",
+        "prettier/@typescript-eslint",
+        "next/core-web-vitals"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "plugins": ["@typescript-eslint", "prettier"],
+    "rules": {
+        "prettier/prettier": 2,
+        "@typescript-eslint/no-unused-vars": 1,
+        "@typescript-eslint/no-explicit-any": 1
+    },
+    "globals": {
+        "console": "writable"
+    }
 }
