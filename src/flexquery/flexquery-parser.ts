@@ -1,7 +1,7 @@
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
 import parser from 'fast-xml-parser';
-import Ajv, {JSONSchemaType} from "ajv"
+import Ajv, { JSONSchemaType } from 'ajv';
 
 import { logger } from '../logging';
 import { TradeType } from '../types/trade';
@@ -47,73 +47,85 @@ interface FQRate {
     _rate: number;
 }
 
-
 interface MyData {
-    _currency: string
-    _assetCategory: string        
-    _symbol: string
-    _dateTime: string
-    _quantity: string
-    _proceeds: string
-    _ibCommission: string
-    _closePrice: string
-    _openCloseIndicator: string
-    _buySell: string
-    _transactionType: string
-    _cost: string
-    _fifoPnlRealized: string
+    _currency: string;
+    _assetCategory: string;
+    _symbol: string;
+    _dateTime: string;
+    _quantity: string;
+    _proceeds: string;
+    _ibCommission: string;
+    _closePrice: string;
+    _openCloseIndicator: string;
+    _buySell: string;
+    _transactionType: string;
+    _cost: string;
+    _fifoPnlRealized: string;
 }
 
-const ajv = new Ajv()
+const ajv = new Ajv();
 
 const schema: JSONSchemaType<MyData> = {
-    type: "object",
+    type: 'object',
     properties: {
-        _currency: {type: "string"},
-        _assetCategory: {type: "string"},        
-        _symbol: {type: "string"},
-        _dateTime: {type: "string"},
-        _quantity: {type: "string"},
-        _proceeds: {type: "string"},
-        _ibCommission: {type: "string"},
-        _closePrice: {type: "string"},
-        _openCloseIndicator: {type: "string"},
-        _buySell: {type: "string"},
-        _transactionType: {type: "string"},
-        _cost: {type: "string"},
-        _fifoPnlRealized: {type: "string"},
+        _currency: { type: 'string' },
+        _assetCategory: { type: 'string' },
+        _symbol: { type: 'string' },
+        _dateTime: { type: 'string' },
+        _quantity: { type: 'string' },
+        _proceeds: { type: 'string' },
+        _ibCommission: { type: 'string' },
+        _closePrice: { type: 'string' },
+        _openCloseIndicator: { type: 'string' },
+        _buySell: { type: 'string' },
+        _transactionType: { type: 'string' },
+        _cost: { type: 'string' },
+        _fifoPnlRealized: { type: 'string' },
     },
-    required: ['_currency', '_assetCategory', '_symbol', '_dateTime', '_quantity', '_proceeds', '_ibCommission', 
-        '_closePrice', '_openCloseIndicator', '_buySell', '_transactionType', '_cost', '_fifoPnlRealized'],    
-    additionalProperties: true
-} 
+    required: [
+        '_currency',
+        '_assetCategory',
+        '_symbol',
+        '_dateTime',
+        '_quantity',
+        '_proceeds',
+        '_ibCommission',
+        '_closePrice',
+        '_openCloseIndicator',
+        '_buySell',
+        '_transactionType',
+        '_cost',
+        '_fifoPnlRealized',
+    ],
+    additionalProperties: true,
+};
 
-const validate = ajv.compile(schema)
+const validate = ajv.compile(schema);
 
 // TODO: move to utils
-const addCalculatedPairs = (ratesByDate:  Map<string, Map<string, number>>) => {
+const addCalculatedPairs = (ratesByDate: Map<string, Map<string, number>>) => {
     // For each day:
     //  1. get SEK/USD rate
     //  2. iterate over every other pair, <CURR>/USD and calculate <CURR>/SEK using SEK/USD
     ratesByDate.forEach((pairs: Map<string, number>) => {
         const sekUsd = pairs.get('SEK/USD');
-        if (sekUsd) {            
+        if (sekUsd) {
             const calculated = new Map();
-            pairs.forEach((val: number, key: string) => {                
-                if (key !== 'SEK/USD') {                    
-                    const numerator = key.substr(0,3);
-                    const rate = sekUsd/val;
-                    calculated.set('SEK/'+numerator, rate);
-                    calculated.set(numerator+'/SEK', 1/rate);
-                }                
+            pairs.forEach((val: number, key: string) => {
+                if (key !== 'SEK/USD') {
+                    const numerator = key.substr(0, 3);
+                    const rate = sekUsd / val;
+                    calculated.set('SEK/' + numerator, rate);
+                    calculated.set(numerator + '/SEK', 1 / rate);
+                }
             });
             calculated.forEach((v, k) => {
                 pairs.set(k, v.toFixed(4));
-            })
+            });
             pairs.set('USD/SEK', 1 / sekUsd);
         }
     });
-}
+};
 
 export class FlexQueryParser {
     options = {
@@ -128,14 +140,14 @@ export class FlexQueryParser {
 
     // TODO: move to utils
     toDateString(dateTime: string): string {
-        // TODO: default to 'New_York/America' tz?        
+        // TODO: default to 'New_York/America' tz?
         const dt = parse(dateTime, FQ_DATETIME_FORMAT, new Date());
         const str = format(dt, DATETIME_FORMAT);
         return str;
     }
 
     public getClosingTrades(): TradeType[] {
-        return this.trades.filter(t => t.openClose === 'C');
+        return this.trades.filter((t) => t.openClose === 'C');
     }
 
     public getAllTrades(): TradeType[] {
@@ -154,11 +166,9 @@ export class FlexQueryParser {
                 if (item._openCloseIndicator === 'C' || item._openCloseIndicator === 'O') {
                     if (!validate(item)) {
                         const messages: string[] = [];
-                        validate.errors?.forEach(e => {
+                        validate.errors?.forEach((e) => {
                             console.log(e.params, e.message);
                             messages.push(`${e.message?.toString()}`);
-                     
-                            
                         });
                         throw new Error(`Invalid FlexStatement.Trades.Trade: ${messages.join(' ')}`);
                     }
@@ -167,8 +177,7 @@ export class FlexQueryParser {
                     t.securityType = item._assetCategory;
                     t.quantity = Number(item._quantity);
                     t.pnl = Number(item._fifoPnlRealized);
-                    
-                    
+
                     t.quantity = Number(item._quantity);
                     t.description = item._description;
                     t.proceeds = Number(item._proceeds);
@@ -208,13 +217,13 @@ export class FlexQueryParser {
                         this.rates.set(dateString, pairs);
                     }
                 },
-            );            
+            );
             addCalculatedPairs(this.rates);
         }
 
         // Add Entry dates for closing trades
         connectTrades(this.trades);
 
-        return this.trades.filter(t => t.openClose === 'C');
+        return this.trades.filter((t) => t.openClose === 'C');
     }
 }

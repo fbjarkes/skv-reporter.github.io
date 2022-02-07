@@ -1,5 +1,4 @@
 export class TradeType {
-
     entryDateTime = '';
     exitDateTime = '';
     symbol = '';
@@ -20,7 +19,16 @@ export class TradeType {
     positionId = 0;
     durationMin = -1;
 
-    constructor(symbol = '', qty = 0, entry = 0, exit= 0, entryDate = '', exitDate = '', openClose = '', direction = '') {
+    constructor(
+        symbol = '',
+        qty = 0,
+        entry = 0,
+        exit = 0,
+        entryDate = '',
+        exitDate = '',
+        openClose = '',
+        direction = '',
+    ) {
         this.symbol = symbol;
         this.quantity = qty;
         this.entryPrice = entry;

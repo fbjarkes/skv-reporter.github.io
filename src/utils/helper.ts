@@ -1,45 +1,43 @@
 import parse from 'date-fns/parse';
-import { TradeType } from "../types/trade";
+import { TradeType } from '../types/trade';
 import { TradeStats } from '../types/tradestats';
 
 export type TradeFilters = {
-    long: boolean,
-    short: boolean,
-    equities: boolean,
-    options: boolean,
-    futures: boolean,
-    duration: number,
-    start?: Date,
-    end?: Date,
-  }
+    long: boolean;
+    short: boolean;
+    equities: boolean;
+    options: boolean;
+    futures: boolean;
+    duration: number;
+    start?: Date;
+    end?: Date;
+};
 
-
-export const filterTrades = (t: TradeType, filters: TradeFilters) : boolean => {
+export const filterTrades = (t: TradeType, filters: TradeFilters): boolean => {
     if (!filters.long && t.direction === 'LONG') {
         return false;
     }
     if (!filters.short && t.direction === 'SHORT') {
         return false;
     }
-    if (!filters.options && t.securityType === 'OPT'){
+    if (!filters.options && t.securityType === 'OPT') {
         return false;
     }
-    if (!filters.equities && t.securityType === 'STK'){
+    if (!filters.equities && t.securityType === 'STK') {
         return false;
     }
-    if (!filters.futures && t.securityType === 'FUT'){
+    if (!filters.futures && t.securityType === 'FUT') {
         return false;
     }
-    
-    
+
     if (filters.start) {
-        const tradeStart = parse(t.entryDateTime.substring(0, 10),'yyyy-MM-dd', new Date());
+        const tradeStart = parse(t.entryDateTime.substring(0, 10), 'yyyy-MM-dd', new Date());
         if (tradeStart < filters.start) {
             return false;
         }
     }
     if (filters.end) {
-        const tradeEnd = parse(t.exitDateTime.substring(0, 10),'yyyy-MM-dd', new Date());
+        const tradeEnd = parse(t.exitDateTime.substring(0, 10), 'yyyy-MM-dd', new Date());
         if (tradeEnd > filters.end) {
             return false;
         }
@@ -49,17 +47,16 @@ export const filterTrades = (t: TradeType, filters: TradeFilters) : boolean => {
             return false;
         }
     }
-    
+
     return true;
-}
+};
 
-
-export const calculateStates = (trades: TradeType[]) : TradeStats => {
-    const stats = new TradeStats();    
-    trades.forEach(t => {
+export const calculateStats = (trades: TradeType[]): TradeStats => {
+    const stats = new TradeStats();
+    trades.forEach((t) => {
         if (t.pnl > 0) {
             stats.winners++;
-            stats.totalWin += t.pnl
+            stats.totalWin += t.pnl;
         } else {
             stats.losers++;
             stats.totalLoss += t.pnl;
@@ -67,4 +64,4 @@ export const calculateStates = (trades: TradeType[]) : TradeStats => {
     });
 
     return stats;
-}
+};

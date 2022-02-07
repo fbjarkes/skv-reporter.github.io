@@ -1,5 +1,4 @@
 export class TradeStats {
-
     totalLoss = 0;
     totalWin = 0;
     winners = 0;
@@ -9,11 +8,11 @@ export class TradeStats {
     firstDate = null;
     lastDate = null;
 
-    get avgWin() : number {
-        return this.totalWin / this.winners;        
+    get avgWin(): number {
+        return this.totalWin / this.winners;
     }
 
-    get avgLoss() : number {
+    get avgLoss(): number {
         return this.totalLoss / this.losers;
     }
 }

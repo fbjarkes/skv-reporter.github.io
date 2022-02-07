@@ -5,13 +5,12 @@ import { FlexQueryParser } from './flexquery-parser';
 
 chai.use(chaiAsPromised);
 
-
 describe('FlexQueryParser', () => {
     let flexParser: FlexQueryParser;
 
-	beforeEach(() => {
-		flexParser = new FlexQueryParser();
-	});
+    beforeEach(() => {
+        flexParser = new FlexQueryParser();
+    });
 
     it('should parse single STK trade', async () => {
         const testFileData = await fs.readFile('test/fixtures/trade1.xml', 'utf8');
@@ -29,8 +28,8 @@ describe('FlexQueryParser', () => {
     it('should get all data for a STK trade', async () => {
         const testFileData = await fs.readFile('test/fixtures/trade2.xml', 'utf8');
         const trades = flexParser.parse(testFileData);
-		expect(trades).to.have.lengthOf(2);
-		
+        expect(trades).to.have.lengthOf(2);
+
         expect(trades[0].symbol).to.equal('UWM');
         expect(trades[0].description).to.equal('PROSHARES ULTRA RUSSELL2000');
         expect(trades[0].quantity).to.equal(-32);
@@ -69,13 +68,13 @@ describe('FlexQueryParser', () => {
     });
 
     it('should have calculated FX mappings', async () => {
-		const testFileData = await fs.readFile('test/fixtures/option_exercised.xml', 'utf8');
+        const testFileData = await fs.readFile('test/fixtures/option_exercised.xml', 'utf8');
         flexParser.parse(testFileData);
-        const rates = flexParser.getConversionRates();        
-        expect(rates.get('2015-03-30')?.get('USD/SEK')).to.equal(1/0.1542);
-        expect(rates.get('2015-03-31')?.get('USD/SEK')).to.equal(1/0.15421);
-        expect(rates.get('2015-03-31')?.get('SEK/EUR')).to.equal((0.15421/1.3634).toFixed(4)); // 0.15420 SEK/USD / 1.36 EUR/USD = SEK/EUR
-        expect(rates.get('2015-03-31')?.get('EUR/SEK')).to.equal((1/(0.15421/1.3634)).toFixed(4));
+        const rates = flexParser.getConversionRates();
+        expect(rates.get('2015-03-30')?.get('USD/SEK')).to.equal(1 / 0.1542);
+        expect(rates.get('2015-03-31')?.get('USD/SEK')).to.equal(1 / 0.15421);
+        expect(rates.get('2015-03-31')?.get('SEK/EUR')).to.equal((0.15421 / 1.3634).toFixed(4)); // 0.15420 SEK/USD / 1.36 EUR/USD = SEK/EUR
+        expect(rates.get('2015-03-31')?.get('EUR/SEK')).to.equal((1 / (0.15421 / 1.3634)).toFixed(4));
     });
 
     it('should handle short trades', async () => {
@@ -119,5 +118,4 @@ describe('FlexQueryParser', () => {
         const testFileData = await fs.readFile('test/fixtures/erroneous.xml', 'utf8');
         expect(() => flexParser.parse(testFileData)).to.throw(/assetCategory/);
     });
-
 });
