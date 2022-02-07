@@ -1,7 +1,7 @@
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
 import parser from 'fast-xml-parser';
-import Ajv from "ajv"
+import Ajv, {JSONSchemaType} from "ajv"
 
 import { logger } from '../logging';
 import { TradeType } from '../types/trade';
@@ -47,9 +47,26 @@ interface FQRate {
     _rate: number;
 }
 
+
+interface MyData {
+    _currency: string
+    _assetCategory: string        
+    _symbol: string
+    _dateTime: string
+    _quantity: string
+    _proceeds: string
+    _ibCommission: string
+    _closePrice: string
+    _openCloseIndicator: string
+    _buySell: string
+    _transactionType: string
+    _cost: string
+    _fifoPnlRealized: string
+}
+
 const ajv = new Ajv()
 
-const schema = {
+const schema: JSONSchemaType<MyData> = {
     type: "object",
     properties: {
         _currency: {type: "string"},
