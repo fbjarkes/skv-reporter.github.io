@@ -111,7 +111,7 @@ const Home = (props: HomeProps) => {
 
     return (
         <>
-            <Grid container justify="center" direction="row">
+            <Grid>
                 <Box display="flex">
                     <Box display="flex" flexDirection="column">
                         <Box>
