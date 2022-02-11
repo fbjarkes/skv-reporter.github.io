@@ -4,7 +4,7 @@ import { AppProps } from 'next/app';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import defaultTheme from '../theme';
+import defaultTheme, { myTheme } from '../utils/theme';
 // import Footer from '../components/footer';
 // import styles from '../styles/App.module.css';
 // import Header from '../components/header';

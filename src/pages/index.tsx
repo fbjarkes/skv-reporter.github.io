@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useContext, useEffect } from 'react';
-import { styled } from '@mui/material/styles';
+import { styled, useTheme } from '@mui/material/styles';
 import { Grid, FormControlLabel, Button, Box, TextField, Checkbox, Typography, Slider } from '@mui/material';
 import { TradeType } from '../types/trade';
 // import { TradesTable } from '../components/trades-table';
@@ -48,6 +48,7 @@ const Home: React.FC<{
     setTrades(trades: TradeType[]): void;
     setFilteredTrades(trades: TradeType[]): void;
 }> = ({ trades, filteredTrades, setTrades, setFilteredTrades }) => {
+    const theme = useTheme();
     const { state, dispatch } = useContext(TradesContext);
     const [selectedFileName, setSelectedFileName] = React.useState<string>('');
     const handleFiltersChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,7 +82,7 @@ const Home: React.FC<{
         <>
             <Grid>
                 <Box display="flex">
-                    <Box display="flex" flexDirection="column" style={{ margin: '2em 2em 2em 2em' }}>
+                    <Box display="flex" flexDirection="column" style={{ margin: theme.spacing(2, 2, 2, 2) }}>
                         <Box style={{ width: 200 }}>
                             <input
                                 id="button-choose"
@@ -108,7 +109,7 @@ const Home: React.FC<{
                                 label="Entry Date"
                                 type="date"
                                 InputLabelProps={{ shrink: true }}
-                                onChange={(e: any) => {
+                                onChange={(e) => {
                                     const d = parse(e.target.value, 'yyyy-MM-dd', new Date());
                                     const f = { ...state.tradeFilters, start: d };
                                     dispatch({ type: ActionType.SetFilterAction, payload: f });
@@ -119,7 +120,7 @@ const Home: React.FC<{
                                 label="Exit Date"
                                 type="date"
                                 InputLabelProps={{ shrink: true }}
-                                onChange={(e: any) => {
+                                onChange={(e) => {
                                     const d = parse(e.target.value, 'yyyy-MM-dd', new Date());
                                     const f = { ...state.tradeFilters, end: d };
                                     dispatch({ type: ActionType.SetFilterAction, payload: f });
@@ -127,7 +128,7 @@ const Home: React.FC<{
                             />
                         </form>
                     </Box>
-                    <Box display="flex" flexDirection="column" style={{ margin: '1em 0em 0em 0em' }}>
+                    <Box display="flex" flexDirection="column" style={{ margin: theme.spacing(1, 0, 0, 0) }}>
                         <FormControlLabel
                             control={
                                 <Checkbox
@@ -151,7 +152,7 @@ const Home: React.FC<{
                             label="Short"
                         />
                     </Box>
-                    <Box display="flex" flexDirection="column" style={{ margin: '1em 0em 0em 0em' }}>
+                    <Box display="flex" flexDirection="column" style={{ margin: theme.spacing(1, 0, 0, 0) }}>
                         <FormControlLabel
                             control={
                                 <Checkbox
@@ -190,7 +191,7 @@ const Home: React.FC<{
                         display="flex"
                         width="30%"
                         flexDirection="column"
-                        style={{ width: '400px', padding: '1em 0em 0em 1em' }}
+                        style={{ width: '400px', padding: theme.spacing(2, 0, 0, 1) }}
                     >
                         <Typography id="duration-slider" gutterBottom>
                             Duration (min)
@@ -200,7 +201,7 @@ const Home: React.FC<{
                             valueLabelDisplay="auto"
                             marks={marks}
                             step={null}
-                            onChange={(e: any, value: number | number[]) => {
+                            onChange={(_e, value: number | number[]) => {
                                 dispatch({
                                     type: ActionType.SetFilterAction,
                                     payload: { ...state.tradeFilters, duration: value as number },
@@ -210,7 +211,7 @@ const Home: React.FC<{
                     </Box>
                 </Box>
             </Grid>
-            <Grid item xs={12} style={{ margin: '2em 0em 5em 2em' }}>
+            <Grid item xs={12} style={{ margin: theme.spacing(2, 0, 5, 2) }}>
                 <div>TABLE HERE</div>
             </Grid>
         </>
