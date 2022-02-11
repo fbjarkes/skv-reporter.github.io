@@ -3,7 +3,7 @@
 import { ReactElement, useContext } from 'react';
 import { TradeType } from '../types/trade';
 // import styles from '../styles/Home.module.css';
-import { TradesContext } from '../trades-context';
+import { TradesContext } from '../contexts/trades-context';
 import { DataGrid } from '@mui/x-data-grid';
 
 // const useStyles = makeStyles((theme) => ({

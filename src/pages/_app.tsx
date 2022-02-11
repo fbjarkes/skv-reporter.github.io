@@ -16,19 +16,15 @@ const App = ({ Component, pageProps }: AppProps): React.ReactNode => {
 
     return (
         <>
-            <div>
-                <div>
-                    <ThemeProvider theme={theme}>
-                        <CssBaseline />
-                        <Component {...pageProps} />
-                        {/* <TradesProvider>
+            <ThemeProvider theme={theme}>
+                <CssBaseline />
+                <Component {...pageProps} />
+                {/* <TradesProvider>
                                 <Header />
                                 <Component {...pageProps} />
                                 <Footer />
                             </TradesProvider> */}
-                    </ThemeProvider>
-                </div>
-            </div>
+            </ThemeProvider>
         </>
     );
 };

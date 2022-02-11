@@ -1,6 +1,6 @@
 import React, { ReactElement, useContext } from 'react';
 import { TradeType } from '../types/trade';
-import TradesProvider, { TradesContext } from '../trades-context';
+import TradesProvider, { TradesContext } from '../contexts/trades-context';
 import { SRUFile } from '../sru/sru-file';
 import { Box, Button, TextField } from '@mui/material';
 

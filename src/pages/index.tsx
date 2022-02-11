@@ -1,10 +1,19 @@
 import React, { ChangeEvent, useContext, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import { Grid, FormControlLabel, Button, Box, TextField, Checkbox, Typography, Slider } from '@mui/material';
 import { TradeType } from '../types/trade';
 // import { TradesTable } from '../components/trades-table';
 // import { filterTrades } from '../utils/helper';
 import parse from 'date-fns/parse';
-import { ActionType, TradesContext } from '../trades-context';
+import { ActionType, TradesContext } from '../contexts/trades-context';
+
+const MyTextField = styled(TextField)(({ theme }) => ({
+    //...theme.typography.body2,
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: 200,
+    //color: theme.palette.text.secondary,
+}));
 
 // const useStyles = makeStyles((theme: any) => ({
 //     file: {
@@ -131,7 +140,7 @@ const Home = (props: HomeProps) => {
                     </Box>
                     <Box>
                         <form noValidate>
-                            <TextField
+                            <MyTextField
                                 id="date"
                                 label="Entry Date"
                                 type="date"
@@ -142,7 +151,7 @@ const Home = (props: HomeProps) => {
                                     //dispatch({type: ActionType.SetFilterAction, payload: f});
                                 }}
                             />
-                            <TextField
+                            <MyTextField
                                 id="date"
                                 label="Exit Date"
                                 type="date"

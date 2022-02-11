@@ -3,7 +3,7 @@ import { Box, makeStyles, Theme, Typography } from '@mui/material';
 import { TradeType } from '../types/trade';
 import { calculateStats } from '../utils/helper';
 import { TradeStats } from '../types/tradestats';
-import { TradesContext } from '../trades-context';
+import { TradesContext } from '../contexts/trades-context';
 
 interface FooterProps {
     trades?: TradeType[];
