@@ -15,41 +15,6 @@ const MyTextField = styled(TextField)(({ theme }) => ({
     //color: theme.palette.text.secondary,
 }));
 
-// const useStyles = makeStyles((theme: any) => ({
-//     file: {
-//         padding: theme.spacing(2, 5, 0, 2),
-//         width: 300
-//     },
-//     dateFilter: {
-//         padding: theme.spacing(2, 5, 0, 2),
-//     },
-//     directionFilter: {
-//         padding: theme.spacing(2, 5, 0, 2),
-//     },
-//     typeFilter: {
-//         padding: theme.spacing(2, 5, 0, 2),
-//     },
-//     durationFilter: {
-//         padding: theme.spacing(2, 5, 0, 2),
-//         width: 400
-//     },
-//     container: {
-//         display: 'flex',
-//         flexWrap: 'wrap',
-//     },
-//     textField: {
-//         marginLeft: theme.spacing(1),
-//         marginRight: theme.spacing(1),
-//         width: 200,
-//     },
-//     filePanel: {
-//         width: 200,
-//     },
-//     table: {
-//         margin: theme.spacing(0, 0, 5, 0),
-//     }
-//   }));
-
 const marks = [
     {
         value: 1,
@@ -77,27 +42,21 @@ const marks = [
     },
 ];
 
-interface HomeProps {
+const Home: React.FC<{
     trades: TradeType[];
     filteredTrades: TradeType[];
     setTrades(trades: TradeType[]): void;
     setFilteredTrades(trades: TradeType[]): void;
-}
-
-const Home = (props: HomeProps) => {
+}> = ({ trades, filteredTrades, setTrades, setFilteredTrades }) => {
     const { state, dispatch } = useContext(TradesContext);
-    const [fileState, setFileState] = React.useState<any>({
-        selectedFile: undefined,
-        loaded: 0,
-    });
+    const [selectedFileName, setSelectedFileName] = React.useState<string>('');
     const handleFiltersChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const newFilters = { ...state.tradeFilters, [event.target.name]: event.target.checked };
         dispatch({ type: ActionType.SetFilterAction, payload: newFilters });
     };
-
     const handleChange = async (event: any) => {
         const file = event.target.files[0];
-        setFileState({ selectedFile: file, loaded: 0 });
+        setSelectedFileName(file);
         const data = new FormData();
         data.append('fileName', file);
         const options = {
@@ -108,7 +67,7 @@ const Home = (props: HomeProps) => {
         const response = await fetch(`/api/uploadApi`, options);
 
         if (response.status === 500) {
-            props.setTrades([]);
+            setTrades([]);
             // TODO: set status to error message?
         }
 
@@ -122,8 +81,8 @@ const Home = (props: HomeProps) => {
         <>
             <Grid>
                 <Box display="flex">
-                    <Box display="flex" flexDirection="column">
-                        <Box>
+                    <Box display="flex" flexDirection="column" style={{ margin: '2em 2em 2em 2em' }}>
+                        <Box style={{ width: 200 }}>
                             <input
                                 id="button-choose"
                                 name="buttonChoose"
@@ -137,9 +96,13 @@ const Home = (props: HomeProps) => {
                                 </Button>
                             </label>
                         </Box>
+                        <Box flexGrow={1} style={{ width: 300 }}>
+                            {selectedFileName}
+                        </Box>
                     </Box>
-                    <Box>
-                        <form noValidate>
+                    <Box style={{ padding: '2em 5em 0em 2em' }}>
+                        {/* TODO: form style? */}
+                        <form noValidate style={{ display: 'flex', flexWrap: 'wrap' }}>
                             <MyTextField
                                 id="date"
                                 label="Entry Date"
@@ -147,8 +110,8 @@ const Home = (props: HomeProps) => {
                                 InputLabelProps={{ shrink: true }}
                                 onChange={(e: any) => {
                                     const d = parse(e.target.value, 'yyyy-MM-dd', new Date());
-                                    // const f = { ... state.tradeFilters, start: d};
-                                    //dispatch({type: ActionType.SetFilterAction, payload: f});
+                                    const f = { ...state.tradeFilters, start: d };
+                                    dispatch({ type: ActionType.SetFilterAction, payload: f });
                                 }}
                             />
                             <MyTextField
@@ -158,13 +121,13 @@ const Home = (props: HomeProps) => {
                                 InputLabelProps={{ shrink: true }}
                                 onChange={(e: any) => {
                                     const d = parse(e.target.value, 'yyyy-MM-dd', new Date());
-                                    //  const f = { ... state.tradeFilters, end: d};
-                                    //  dispatch({type: ActionType.SetFilterAction, payload: f});
+                                    const f = { ...state.tradeFilters, end: d };
+                                    dispatch({ type: ActionType.SetFilterAction, payload: f });
                                 }}
                             />
                         </form>
                     </Box>
-                    <Box display="flex" flexDirection="column">
+                    <Box display="flex" flexDirection="column" style={{ margin: '1em 0em 0em 0em' }}>
                         <FormControlLabel
                             control={
                                 <Checkbox
@@ -188,7 +151,7 @@ const Home = (props: HomeProps) => {
                             label="Short"
                         />
                     </Box>
-                    <Box display="flex" flexDirection="column">
+                    <Box display="flex" flexDirection="column" style={{ margin: '1em 0em 0em 0em' }}>
                         <FormControlLabel
                             control={
                                 <Checkbox
@@ -223,7 +186,12 @@ const Home = (props: HomeProps) => {
                             label="Futures"
                         />
                     </Box>
-                    <Box display="flex" width="30%" flexDirection="column">
+                    <Box
+                        display="flex"
+                        width="30%"
+                        flexDirection="column"
+                        style={{ width: '400px', padding: '1em 0em 0em 1em' }}
+                    >
                         <Typography id="duration-slider" gutterBottom>
                             Duration (min)
                         </Typography>
@@ -242,100 +210,11 @@ const Home = (props: HomeProps) => {
                     </Box>
                 </Box>
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} style={{ margin: '2em 0em 5em 2em' }}>
                 <div>TABLE HERE</div>
             </Grid>
         </>
     );
 };
-
-// const Home = (props: HomeProps) : any => {
-//     const { state, dispatch } = useContext(TradesContext);
-//     const classes = useStyles();
-//     const [fileState, setFileState] = React.useState<any>({
-//         selectedFile: undefined,
-//         loaded: 0
-//     })
-
-//     const handleFiltersChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-//         const newFilters = { ...state.tradeFilters, [event.target.name]: event.target.checked };
-//         dispatch({type: ActionType.SetFilterAction, payload: newFilters});
-//     };
-
-//     const handleChange = async (event: any) => {
-//         const file = event.target.files[0];
-//         setFileState({selectedFile: file, loaded: 0});
-//         const data = new FormData();
-//         data.append('fileName', file);
-//         const options = {
-//             method: 'POST',
-//             body: data
-//         }
-
-//         const response = await fetch(`/api/uploadApi`, options);
-
-//         if (response.status === 500) {
-//             props.setTrades([])
-//             // TODO: set status to error message?
-//         }
-
-//         if (response.status === 201) {
-//             const trades = await response.json();
-//             dispatch({type: ActionType.SetTradeAction, payload: trades})
-//         }
-//     };
-
-//     return (
-//         <>
-//             <Grid container justify="center" direction="row">
-//                 <Grid item xs={12}>
-//                     <Box display="flex" className="classes.header">
-//                         <Box className="classes.filePanel" display="flex" flexDirection="column">
-//                             <Box className={classes.file}>
-//                                 <label htmlFor="button-choose">
-//                                     <input id="button-choose" name="buttonChoose" style={{ display: 'none' }} type="file" onChange={handleChange} />
-//                                     <Button className="buttonChoose" variant="contained" component="span">Choose File</Button>
-//                                 </label>
-//                             </Box>
-//                             <Box flexGrow={1} className={classes.file}>{fileState.selectedFile?.name ?? ''}</Box>
-//                         </Box>
-//                         <Box className={classes.dateFilter}>
-//                             <form className={classes.container} noValidate>
-//                                 <TextField id="date" label="Entry Date" type="date" className={classes.textField} InputLabelProps={{shrink: true }} onChange={(e) => {
-//                                     const d = parse(e.target.value, 'yyyy-MM-dd', new Date());
-//                                     const f = { ... state.tradeFilters, start: d};
-//                                     dispatch({type: ActionType.SetFilterAction, payload: f});
-//                                 }}/>
-//                                 <TextField id="date" label="Exit Date" type="date" className={classes.textField} InputLabelProps={{shrink: true }} onChange={(e) => {
-//                                     const d = parse(e.target.value, 'yyyy-MM-dd', new Date());
-//                                     const f = { ... state.tradeFilters, end: d};
-//                                     dispatch({type: ActionType.SetFilterAction, payload: f});
-//                                 }}/>
-//                             </form>
-//                         </Box>
-//                         <Box className={classes.directionFilter} display="flex" flexDirection="column">
-//                             <FormControlLabel control={<Checkbox checked={state.tradeFilters.long} onChange={handleFiltersChange} name="long" color="primary" />} label="Long" />
-//                             <FormControlLabel control={<Checkbox checked={state.tradeFilters.short} onChange={handleFiltersChange} name="short" color="primary" />} label="Short" />
-//                         </Box>
-//                         <Box className={classes.typeFilter} display="flex" flexDirection="column">
-//                             <FormControlLabel control={<Checkbox checked={state.tradeFilters.equities} onChange={handleFiltersChange} name="equities" color="primary" />} label="Equities" />
-//                             <FormControlLabel control={<Checkbox checked={state.tradeFilters.options} onChange={handleFiltersChange} name="options" color="primary" />} label="Options" />
-//                             <FormControlLabel control={<Checkbox checked={state.tradeFilters.futures} onChange={handleFiltersChange} name="futures" color="primary" />} label="Futures" />
-//                         </Box>
-//                         <Box className={classes.durationFilter} display="flex" width="30%" flexDirection="column" >
-//                             <Typography id="duration-slider" gutterBottom>Duration (min)</Typography>
-//                             <Slider defaultValue={100} valueLabelDisplay="auto" marks={marks} step={null} onChange={(e: any, value: number | number[]) => {
-//                                 dispatch({type: ActionType.SetFilterAction, payload: { ... state.tradeFilters, duration: value as number}});
-//                             }} />
-//                         </Box>
-//                     </Box>
-//                 </Grid>
-//                 <Grid item xs={12} className={classes.table} >
-//                     <TradesTable />
-//                 </Grid>
-//             </Grid>
-//         </>
-//     );
-// };
 
 export default Home;
