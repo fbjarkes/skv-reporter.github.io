@@ -5,7 +5,7 @@ import { TradeType } from '../types/trade';
 // import { TradesTable } from '../components/trades-table';
 // import { filterTrades } from '../utils/helper';
 import parse from 'date-fns/parse';
-import { ActionType, TradesContext } from '../contexts/trades-context';
+import { ActionType, TradesContext } from '../contexts/TradesContext';
 
 const MyTextField = styled(TextField)(({ theme }) => ({
     //...theme.typography.body2,
@@ -202,6 +202,7 @@ const Home: React.FC<{
                             marks={marks}
                             step={null}
                             onChange={(_e, value: number | number[]) => {
+                                // TODO: useCallback() here?
                                 dispatch({
                                     type: ActionType.SetFilterAction,
                                     payload: { ...state.tradeFilters, duration: value as number },

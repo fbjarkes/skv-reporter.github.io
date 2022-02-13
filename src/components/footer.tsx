@@ -3,8 +3,8 @@ import React, { useContext } from 'react';
 import { Box, Typography, useTheme } from '@mui/material';
 
 import { calculateStats } from '../utils/helper';
-import { TradeStats } from '../types/tradestats';
-import { TradesContext } from '../contexts/trades-context';
+// import { TradeStats } from '../types/tradestats';
+import { TradesContext } from '../contexts/TradesContext';
 
 const Footer: React.VFC = () => {
     const theme = useTheme();

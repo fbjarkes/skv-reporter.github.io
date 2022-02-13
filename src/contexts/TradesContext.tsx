@@ -1,9 +1,8 @@
 import * as React from 'react';
-import { Statement } from '../types/statement';
 import { TradeType } from '../types/trade';
 import { TradeFilters, filterTrades } from '../utils/helper';
 
-type TradesContextProps = {
+type TradesContextType = {
     state: State;
     dispatch: React.Dispatch<TradeActions>;
     filteredTrades?: TradeType[];
@@ -48,10 +47,6 @@ export enum ActionType {
 
 type TradeActions = SetTradeAction | SetFilterAction;
 
-type Props = {
-    children: React.ReactNode;
-};
-
 export const tradesReducer: React.Reducer<State, TradeActions> = (state, action): State => {
     switch (action.type) {
         case ActionType.SetTradeAction:
@@ -73,15 +68,15 @@ export const tradesReducer: React.Reducer<State, TradeActions> = (state, action)
     }
 };
 
-export const TradesContext = React.createContext<TradesContextProps>({
+export const TradesContext = React.createContext<TradesContextType>({
     state: initialState,
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     dispatch: () => {},
 });
 
-export const TradesProvider = ({ children }: Props) => {
+export const TradesProvider: React.FC = ({ children }) => {
     const [state, dispatch] = React.useReducer(tradesReducer, initialState);
-    const value: TradesContextProps = { state, dispatch };
+    const value: TradesContextType = { state, dispatch };
 
     return <TradesContext.Provider value={value}>{children}</TradesContext.Provider>;
 };
