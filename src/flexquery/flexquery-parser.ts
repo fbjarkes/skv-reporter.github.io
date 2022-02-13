@@ -86,7 +86,7 @@ const schema: JSONSchemaType<MyData> = {
         '_currency',
         '_assetCategory',
         '_symbol',
-        '_dateTime',
+        //'_dateTime',
         '_quantity',
         '_proceeds',
         '_ibCommission',
@@ -138,9 +138,11 @@ export class FlexQueryParser {
     private rates: Map<string, Map<string, number>> = new Map();
     private trades: TradeType[] = [];
 
-    // TODO: move to utils
     toDateString(dateTime: string): string {
         // TODO: default to 'New_York/America' tz?
+        if (!dateTime || dateTime === '' || dateTime.length !== FQ_DATETIME_FORMAT.length) {
+            return '';
+        }
         const dt = parse(dateTime, FQ_DATETIME_FORMAT, new Date());
         const str = format(dt, DATETIME_FORMAT);
         return str;

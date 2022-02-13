@@ -118,4 +118,15 @@ describe('FlexQueryParser', () => {
         const testFileData = await fs.readFile('test/fixtures/erroneous.xml', 'utf8');
         expect(() => flexParser.parse(testFileData)).to.throw(/assetCategory/);
     });
+
+    it('should handle missing dateTime gracefully', async () => {
+        const testFileData = await fs.readFile('test/fixtures/missing_datetime.xml', 'utf8');
+        flexParser.parse(testFileData);
+        const trades = flexParser.getAllTrades();
+        expect(trades[0]).to.not.be.undefined;
+        expect(trades[0].symbol).to.equal('ABC');
+        expect(trades[0].entryDateTime).to.equal('');
+        expect(trades[0].exitDateTime).to.equal('');
+        expect(trades[0].durationMin).to.equal(-1);
+    });
 });
