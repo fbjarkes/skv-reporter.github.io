@@ -1,4 +1,3 @@
-  
 import type { NextApiRequest, NextApiResponse } from 'next';
 import multer from 'multer';
 import initMiddleware from '../../utils/init-middleware';
@@ -8,21 +7,19 @@ import { FlexQueryParser } from '../../flexquery/flexquery-parser';
 const upload = multer();
 
 // for parsing multipart/form-data
-const multerAny = initMiddleware(
-    upload.any()
-);
+const multerAny = initMiddleware(upload.any());
 
 type NextApiRequestWithFormData = NextApiRequest & {
-    files: any[],
-}
+    files: any[];
+};
 
 export const config = {
     api: {
         bodyParser: false,
-    }
-}
+    },
+};
 
-export default async (req: NextApiRequestWithFormData, res: NextApiResponse<TradeType[]>): Promise<void> => {
+const uploadApi = async (req: NextApiRequestWithFormData, res: NextApiResponse<TradeType[]>): Promise<void> => {
     const flexParser = new FlexQueryParser();
     await multerAny(req, res);
 
@@ -42,10 +39,12 @@ export default async (req: NextApiRequestWithFormData, res: NextApiResponse<Trad
         // TODO: save rates
         res.statusCode = 201;
         res.json(trades);
-        res.end();        
+        res.end();
     } catch (err) {
         console.error(err);
         res.statusCode = 500;
         res.json([]);
     }
-}
+};
+
+export default uploadApi;

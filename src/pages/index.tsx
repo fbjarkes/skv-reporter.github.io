@@ -55,11 +55,13 @@ const Home: React.FC<{
         const newFilters = { ...state.tradeFilters, [event.target.name]: event.target.checked };
         dispatch({ type: ActionType.SetFilterAction, payload: newFilters });
     };
-    const handleChange = async (event: any) => {
+    const uploadFile = async (event: React.BaseSyntheticEvent) => {
+        console.log('uploadFile', event);
         const file = event.target.files[0];
-        setSelectedFileName(file);
+        console.log(file);
+        setSelectedFileName(file.name);
         const data = new FormData();
-        data.append('fileName', file);
+        data.append('file', file);
         const options = {
             method: 'POST',
             body: data,
@@ -68,7 +70,7 @@ const Home: React.FC<{
         const response = await fetch(`/api/uploadApi`, options);
 
         if (response.status === 500) {
-            setTrades([]);
+            dispatch({ type: ActionType.SetTradeAction, payload: [] });
             // TODO: set status to error message?
         }
 
@@ -89,7 +91,7 @@ const Home: React.FC<{
                                 name="buttonChoose"
                                 style={{ display: 'none' }}
                                 type="file"
-                                onChange={handleChange}
+                                onChange={uploadFile}
                             />
                             <label htmlFor="button-choose">
                                 <Button className="buttonChoose" variant="contained" component="span">
