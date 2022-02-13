@@ -135,8 +135,8 @@ export class FlexQueryParser {
         parseAttributeValue: false,
     };
 
-    private rates: Map<string, Map<string, number>> = new Map();
-    private trades: TradeType[] = [];
+    #rates: Map<string, Map<string, number>> = new Map();
+    #trades: TradeType[] = [];
 
     toDateString(dateTime: string): string {
         // TODO: default to 'New_York/America' tz?
@@ -149,15 +149,15 @@ export class FlexQueryParser {
     }
 
     public getClosingTrades(): TradeType[] {
-        return this.trades.filter((t) => t.openClose === 'C');
+        return this.#trades.filter((t) => t.openClose === 'C');
     }
 
     public getAllTrades(): TradeType[] {
-        return this.trades;
+        return this.#trades;
     }
 
     public getConversionRates(): Map<string, Map<string, number>> {
-        return this.rates;
+        return this.#rates;
     }
 
     public parse(fileData: string): TradeType[] {
@@ -198,7 +198,7 @@ export class FlexQueryParser {
                         t.entryDateTime = this.toDateString(item._dateTime);
                         t.direction = item._quantity > 0 ? 'LONG' : 'SHORT';
                     }
-                    this.trades.push(t);
+                    this.#trades.push(t);
                 } else {
                     logger.info(`Not handling FQTrade: ${item}`);
                 }
@@ -209,23 +209,23 @@ export class FlexQueryParser {
             xmlData.FlexQueryResponse.FlexStatements.FlexStatement.ConversionRates.ConversionRate.forEach(
                 (item: FQRate) => {
                     const dateString = format(parse(item._reportDate, FQ_DATE_FORMAT, new Date()), DATE_FORMAT);
-                    if (this.rates.has(dateString)) {
-                        this.rates
+                    if (this.#rates.has(dateString)) {
+                        this.#rates
                             .get(dateString)
                             ?.set(`${item._fromCurrency}/${item._toCurrency}`, Number(item._rate));
                     } else {
                         const pairs = new Map();
                         pairs.set(`${item._fromCurrency}/${item._toCurrency}`, Number(item._rate));
-                        this.rates.set(dateString, pairs);
+                        this.#rates.set(dateString, pairs);
                     }
                 },
             );
-            addCalculatedPairs(this.rates);
+            addCalculatedPairs(this.#rates);
         }
 
         // Add Entry dates for closing trades
-        connectTrades(this.trades);
+        connectTrades(this.#trades);
 
-        return this.trades.filter((t) => t.openClose === 'C');
+        return this.#trades.filter((t) => t.openClose === 'C');
     }
 }

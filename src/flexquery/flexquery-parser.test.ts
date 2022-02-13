@@ -20,7 +20,7 @@ describe('FlexQueryParser', () => {
         expect(trades[0].symbol).to.equal('ABC');
         expect(trades[0].exitDateTime).to.equal('2015-03-27 16:00');
         expect(trades[0].securityType).to.equal('STK');
-        expect(trades[0].quantity).to.equal(1.0);
+        expect(trades[0].quantity).to.equal(-1);
         expect(trades[0].exitPrice).to.equal(400.0);
         expect(trades[0].pnl).to.equal(-100.0);
     });

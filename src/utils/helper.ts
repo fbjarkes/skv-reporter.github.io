@@ -53,6 +53,7 @@ export const filterTrades = (t: TradeType, filters: TradeFilters): boolean => {
 
 export const calculateStats = (trades: TradeType[]): TradeStats => {
     const stats = new TradeStats();
+    // TODO: need to check trade currency (only USD supported?)
     trades.forEach((t) => {
         if (t.pnl > 0) {
             stats.winners++;
