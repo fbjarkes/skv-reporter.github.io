@@ -1,9 +1,6 @@
-// import { DataGrid } from '@material-ui/data-grid';
-// import { makeStyles } from '@material-ui/core/styles';
 import { ReactElement, useContext } from 'react';
 import { TradeType } from '../types/trade';
-// import styles from '../styles/Home.module.css';
-import { TradesContext } from '../contexts/trades-context';
+import { TradesContext } from '../contexts/TradesContext';
 import { DataGrid } from '@mui/x-data-grid';
 
 // const useStyles = makeStyles((theme) => ({
@@ -26,14 +23,8 @@ const columns = [
     { field: 'securityType', headerName: 'Type', width: 120 },
 ];
 
-interface TradeProps {
-    data?: TradeType[];
-}
-
-export const TradesTable = (props: TradeProps): ReactElement => {
-    // const classes = useStyles();
+export const TradesTable: React.VFC = () => {
     const { state } = useContext(TradesContext);
-    // const trades = props.data ?? [];
     const trades = state.filteredTrades ?? [];
     console.log('Rendering with ', trades.length);
     return (

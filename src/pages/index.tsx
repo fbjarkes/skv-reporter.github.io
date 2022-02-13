@@ -2,7 +2,7 @@ import React, { ChangeEvent, useContext, useEffect } from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import { Grid, FormControlLabel, Button, Box, TextField, Checkbox, Typography, Slider } from '@mui/material';
 import { TradeType } from '../types/trade';
-// import { TradesTable } from '../components/trades-table';
+import { TradesTable } from '../components/TradesTable';
 // import { filterTrades } from '../utils/helper';
 import parse from 'date-fns/parse';
 import { ActionType, TradesContext } from '../contexts/TradesContext';
@@ -213,7 +213,7 @@ const Home: React.FC<{
                 </Box>
             </Grid>
             <Grid item xs={12} style={{ margin: theme.spacing(2, 0, 5, 2) }}>
-                <div>TABLE HERE</div>
+                <TradesTable />
             </Grid>
         </>
     );
