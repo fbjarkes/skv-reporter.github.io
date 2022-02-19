@@ -2,7 +2,7 @@ import * as React from 'react';
 import { TradeType } from '../types/trade';
 import { TradeFilters, filterTrades } from '../utils/helper';
 
-type TradesContextType = {
+export type TradesContextType = {
     state: State;
     dispatch: React.Dispatch<TradeActions>;
     filteredTrades?: TradeType[];
