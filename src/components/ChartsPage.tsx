@@ -1,6 +1,5 @@
 import React, { ReactElement, useContext } from 'react';
 
-import { TradeType } from '../types/trade';
 import { TradesContext } from '../contexts/TradesContext';
 import Chart from './Chart';
 

@@ -23,7 +23,7 @@ const columns = [
     { field: 'securityType', headerName: 'Type', width: 120 },
 ];
 
-export const TradesTable: React.VFC = () => {
+export const TradesTable: React.FC = () => {
     const { state } = useContext(TradesContext);
     const trades = state.filteredTrades ?? [];
     console.log('Rendering with ', trades.length);
