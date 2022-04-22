@@ -21,6 +21,7 @@ export class SRUFile {
     trades: TradeType[];
     fxRates: Map<string, Map<string, number>>;
     createDate = new Date();
+    supportedCurrencies = ['SEK', 'USD'];
 
     constructor(fxRates: Map<string, Map<string, number>>, trades: TradeType[], data?: SRUInfo) {
         this.sruInfo = data;
@@ -56,6 +57,9 @@ export class SRUFile {
                 throw new Error(`Unexpected statement for tax year ${this.sruInfo?.taxYear}`);
             }
 
+            if (!this.supportedCurrencies.includes(trade.currency)) {
+                throw new Error(`Unsupported currency '${trade.currency}'`);
+            }
             if (trade.currency !== 'SEK') {
                 const key = trade.exitDateTime.substring(0, 10);
                 rate = this.fxRates.get(key)?.get('USD/SEK');

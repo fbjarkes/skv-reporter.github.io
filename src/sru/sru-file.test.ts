@@ -37,6 +37,7 @@ describe('SRU Files', () => {
         t.commission = comm;
         t.pnl = pnl;
         t.transactionType = 'ExchTrade';
+        t.currency = 'USD';
         return t;
     };
 
@@ -82,6 +83,7 @@ describe('SRU Files', () => {
             t1.commission = 1.5;
             t1.transactionType = 'ExchTrade';
             t1.pnl = 98.5; // 1000 - (900 + 1.5)
+            t1.currency = 'USD';
 
             const sru = new SRUFile(fxRates, [t1]);
             const statements = sru.getStatements();
@@ -160,11 +162,13 @@ describe('SRU Files', () => {
             t2.symbol = 'SPY';
             t2.securityType = 'STK';
             t2.pnl = 0.1;
+            t2.currency = 'USD';
             const t3 = new TradeType();
             t3.exitDateTime = '2020-01-10';
             t3.symbol = 'SPY';
             t3.securityType = 'STK';
             t3.pnl = 0.2;
+            t3.currency = 'USD';
 
             const sru = new SRUFile(fxRates, [t1, t2, t3]);
             const statements = sru.getStatements();
@@ -192,14 +196,25 @@ describe('SRU Files', () => {
             t1.symbol = 'SPY';
             t1.securityType = 'STK';
             t1.pnl = 1;
+            t1.currency = 'USD';
             const t2 = new TradeType();
             t2.exitDateTime = '2020-01-11';
             t2.symbol = 'SPY';
             t2.securityType = 'STK';
             t2.pnl = 1;
-
+            t2.currency = 'USD';
             const sru = new SRUFile(fxRates, [t1, t2]);
             expect(() => sru.getStatements()).to.throw('Missing USD/SEK rate for 2020-01-11');
+        });
+        it('should throw error for unsupported trade currency', () => {
+            const t1 = new TradeType();
+            t1.exitDateTime = '2020-01-10';
+            t1.symbol = 'BMW';
+            t1.securityType = 'STK';
+            t1.pnl = 1;
+            t1.currency = 'EUR';
+            const sru = new SRUFile(fxRates, [t1]);
+            expect(() => sru.getStatements()).to.throw(/Unsupported currency 'EUR'/);
         });
     });
 
