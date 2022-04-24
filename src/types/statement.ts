@@ -6,6 +6,7 @@ export enum K4_TYPE {
 }
 
 export class Statement {
+    id: number;
     symbol: string; // TODO: max 80 chars
     quantity = 0;
     received: number;
@@ -15,6 +16,7 @@ export class Statement {
     date: string;
 
     constructor(
+        id: number,
         quantity: number,
         symbol: string,
         paid: number,
@@ -23,6 +25,7 @@ export class Statement {
         type: K4_TYPE,
         date: string,
     ) {
+        this.id = id;
         this.quantity = Math.abs(quantity);
         this.symbol = symbol.substring(0, 80);
         this.paid = Math.abs(Math.round(paid));

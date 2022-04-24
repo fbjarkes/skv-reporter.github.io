@@ -137,7 +137,7 @@ describe('SRU Files', () => {
         });
 
         it('should split statements according to K4 form limits', () => {
-            const statements = new Array(19).fill(new Statement(100, 'SPY', 100, 100, 0, K4_TYPE.TYPE_A, ''));
+            const statements = new Array(19).fill(new Statement(0, 100, 'SPY', 100, 100, 0, K4_TYPE.TYPE_A, ''));
             const chunks = SRUFile.splitStatements(statements);
             expect(chunks[0]).to.be.of.length(9);
             expect(chunks[1]).to.be.of.length(9);
@@ -301,7 +301,40 @@ describe('SRU Files', () => {
 
         it('should calculate totals for each type');
 
-        it.skip('should do commodity futures in Type D section');
+        it.skip('should do commodity futures in Type D section', () => {
+            const t1 = _createTrade('MCLX1', 50005, 50105, 5, 100);
+            const t2 = _createTrade('MGCM1', 30005, 29905, 5, -100);
+            const sru = new SRUFile(fxRates, [t1, t2]);
+            const statements = sru.getStatements();
+            const form = new K4Form('K4-2021P4', 1, '19900101-1234', new Date(2021, 0, 1, 14, 30, 0), statements);
+
+            // const expectedLines = [
+            //     '#BLANKETT K4-2021P4',
+            //     '#IDENTITET 19900101-1234 20210101 143000',
+            //     '#UPPGIFT 7014 1',
+            //     // T1
+            //     '#UPPGIFT 3410 100',
+            //     '#UPPGIFT 3101 SPY ...',
+            //     '#UPPGIFT 3102 9109',
+            //     '#UPPGIFT 3103 8199',
+            //     '#UPPGIFT 3104 910',
+            //     // T2
+            //     '#UPPGIFT 3110 100',
+            //     '#UPPGIFT 3111 QQQ ...',
+            //     '#UPPGIFT 3112 8199',
+            //     '#UPPGIFT 3113 9109',
+            //     '#UPPGIFT 3115 910',
+
+            //     // Sum
+            //     `#UPPGIFT 3300 ${totalProceeds}`,
+            //     `#UPPGIFT 3301 ${totalCost}`,
+            //     `#UPPGIFT 3304 ${totalProfit}`,
+            //     `#UPPGIFT 3305 ${totalLoss}`,
+            //     '#BLANKETTSLUT',
+            // ];
+            // const lines = form.generateLines();
+            // expect(lines).to.have.members(expectedLines);
+        });
         it.skip('should do index futures in Type A section');
     });
 });

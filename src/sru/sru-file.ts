@@ -1,7 +1,7 @@
 import { chunk } from 'lodash';
 import { K4_TYPE, Statement } from '../types/statement';
 import { TradeType } from '../types/trade';
-import { logger } from '../logging';
+//import { logger } from '../logging'; // TODO: only import in non-browser environment
 import { K4Form } from '../types/k4-form';
 import format from 'date-fns/format';
 
@@ -49,6 +49,7 @@ export class SRUFile {
 
     getStatements(): Statement[] {
         const statements: Statement[] = [];
+        let id = 0;
         this.trades.forEach((trade: TradeType) => {
             let rate: number | undefined = 1;
             let paid, received;
@@ -77,6 +78,7 @@ export class SRUFile {
             }
             const pnl = trade.pnl * rate;
             const statement = new Statement(
+                id++,
                 trade.quantity,
                 `${trade.symbol} ${trade.description}`,
                 paid,
@@ -86,9 +88,11 @@ export class SRUFile {
                 trade.exitDateTime,
             );
             if (Math.abs(pnl) < 1) {
-                logger.info(`Skipping trade with < 1SEK: ${statement.toString()}`);
+                //logger.info(`Skipping trade with < 1SEK: ${statement.toString()}`);
+                console.log(`Skipping trade with < 1SEK: ${statement.toString()}`);
             } else {
-                logger.info(`Adding: ${statement.toString()}`);
+                //logger.info(`Adding: ${statement.toString()}`);
+                console.log(`Adding: ${statement.toString()}`);
                 statements.push(statement);
             }
         });
