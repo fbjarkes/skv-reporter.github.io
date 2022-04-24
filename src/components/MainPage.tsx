@@ -1,10 +1,9 @@
-import React, { ChangeEvent, useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import { Grid, FormControlLabel, Button, Box, TextField, Checkbox, Typography, Slider } from '@mui/material';
-import { TradeType } from '../types/trade';
-import { TradesTable } from '../components/TradesTable';
-// import { filterTrades } from '../utils/helper';
 import parse from 'date-fns/parse';
+
+import { TradesTable } from '../components/TradesTable';
 import { ActionType, TradesContext } from '../contexts/TradesContext';
 
 const MyTextField = styled(TextField)(({ theme }) => ({
@@ -42,12 +41,7 @@ const marks = [
     },
 ];
 
-const MainPage: React.FC<{
-    trades: TradeType[];
-    filteredTrades: TradeType[];
-    setTrades(trades: TradeType[]): void;
-    setFilteredTrades(trades: TradeType[]): void;
-}> = ({ trades, filteredTrades, setTrades, setFilteredTrades }) => {
+const MainPage: React.FC = () => {
     const theme = useTheme();
     const { state, dispatch } = useContext(TradesContext);
     const [selectedFileName, setSelectedFileName] = React.useState<string>('');
@@ -69,14 +63,13 @@ const MainPage: React.FC<{
 
         const response = await fetch(`/api/uploadApi`, options);
         if (response.status === 500) {
-            dispatch({ type: ActionType.SetTradeAction, payload: { trades: [] } });
+            dispatch({ type: ActionType.SetTradeAction, payload: { trades: [], statements: [] } });
             // TODO: set status to error message?
         }
 
         if (response.status === 201) {
             try {
                 const res = await response.json();
-                console.log('res:', res);
                 dispatch({
                     type: ActionType.SetTradeAction,
                     payload: { trades: res.trades, statements: res.statements },

@@ -6,10 +6,6 @@ import { TradeFilters, filterTrades } from '../utils/helper';
 export type TradesContextType = {
     state: State;
     dispatch: React.Dispatch<TradeActions>;
-    filteredTrades?: TradeType[];
-    // setFilteredTrades(trades: TradeType[]) : void,
-    conversionRates?: Map<string, Map<string, number>>;
-    // setConversionRates(rates: Map<string, Map<string, number>>) : void,
 };
 
 const initialState = {
@@ -23,18 +19,19 @@ const initialState = {
         futures: true,
         duration: 100,
     },
+    statements: [],
 };
 
 type State = {
     trades: TradeType[];
     filteredTrades: TradeType[];
     tradeFilters: TradeFilters;
-    statements?: Statement[];
+    statements: Statement[];
 };
 
 export interface SetTradeAction {
     type: ActionType.SetTradeAction;
-    payload: { trades: TradeType[]; statements?: Statement[] };
+    payload: { trades: TradeType[]; statements: Statement[] };
 }
 
 export interface SetFilterAction {
@@ -59,12 +56,11 @@ export const tradesReducer: React.Reducer<State, TradeActions> = (state, action)
                 tradeFilters: state.tradeFilters,
             };
         case ActionType.SetFilterAction:
-            const filters = action.payload;
-            const filteredTrades = state.trades.filter((t) => filterTrades(t, filters));
             return {
                 trades: state.trades,
-                filteredTrades: filteredTrades,
-                tradeFilters: filters,
+                statements: state.statements,
+                filteredTrades: state.trades.filter((t) => filterTrades(t, action.payload)),
+                tradeFilters: action.payload,
             };
         default:
             return state;
