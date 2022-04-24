@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Statement } from '../types/statement';
 import { TradeType } from '../types/trade';
 import { TradeFilters, filterTrades } from '../utils/helper';
 
@@ -28,11 +29,12 @@ type State = {
     trades: TradeType[];
     filteredTrades: TradeType[];
     tradeFilters: TradeFilters;
+    statements?: Statement[];
 };
 
 export interface SetTradeAction {
     type: ActionType.SetTradeAction;
-    payload: TradeType[];
+    payload: { trades: TradeType[]; statements?: Statement[] };
 }
 
 export interface SetFilterAction {
@@ -51,8 +53,9 @@ export const tradesReducer: React.Reducer<State, TradeActions> = (state, action)
     switch (action.type) {
         case ActionType.SetTradeAction:
             return {
-                trades: action.payload,
-                filteredTrades: action.payload.filter((t) => filterTrades(t, state.tradeFilters)),
+                trades: action.payload.trades,
+                statements: action.payload.statements,
+                filteredTrades: action.payload.trades.filter((t) => filterTrades(t, state.tradeFilters)),
                 tradeFilters: state.tradeFilters,
             };
         case ActionType.SetFilterAction:

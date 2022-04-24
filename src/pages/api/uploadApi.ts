@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import multer from 'multer';
 import initMiddleware from '../../utils/init-middleware';
-import { TradeType } from '../../types/trade';
 import { FlexQueryParser } from '../../flexquery/flexquery-parser';
+import { SRUFile } from '../../sru/sru-file';
 
 const upload = multer();
 
@@ -19,7 +19,7 @@ export const config = {
     },
 };
 
-const uploadApi = async (req: NextApiRequestWithFormData, res: NextApiResponse<TradeType[]>): Promise<void> => {
+const uploadApi = async (req: NextApiRequestWithFormData, res: NextApiResponse): Promise<void> => {
     const flexParser = new FlexQueryParser();
     await multerAny(req, res);
 
@@ -30,20 +30,20 @@ const uploadApi = async (req: NextApiRequestWithFormData, res: NextApiResponse<T
     }
 
     const blob = req.files[0];
-
     try {
         console.log(`Processing file: ${blob.originalname} (${blob.size / 1024}kb)`);
         flexParser.parse(blob.buffer.toString('utf8'));
         const trades = flexParser.getClosingTrades();
-        const rates = flexParser.getConversionRates();
-        // TODO: save rates
+        const sruFiles = new SRUFile(flexParser.getConversionRates(), trades);
+        const statements = sruFiles.getStatements();
         res.statusCode = 201;
-        res.json(trades);
+        res.json({ trades: trades, statements: statements });
         res.end();
     } catch (err) {
         console.error(err);
         res.statusCode = 500;
         res.json([]);
+        res.end();
     }
 };
 

@@ -16,8 +16,8 @@ export const Header = () => {
                     <Link href="/charts" passHref>
                         <Button color="inherit">Charts</Button>
                     </Link>
-                    <Link href="/sru-download" passHref>
-                        <Button color="inherit">SRU download</Button>
+                    <Link href="/sru-statements" passHref>
+                        <Button color="inherit">SRU Statements</Button>
                     </Link>
                 </Toolbar>
             </AppBar>

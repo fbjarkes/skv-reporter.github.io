@@ -68,15 +68,22 @@ const MainPage: React.FC<{
         };
 
         const response = await fetch(`/api/uploadApi`, options);
-
         if (response.status === 500) {
-            dispatch({ type: ActionType.SetTradeAction, payload: [] });
+            dispatch({ type: ActionType.SetTradeAction, payload: { trades: [] } });
             // TODO: set status to error message?
         }
 
         if (response.status === 201) {
-            const trades = await response.json();
-            dispatch({ type: ActionType.SetTradeAction, payload: trades });
+            try {
+                const res = await response.json();
+                console.log('res:', res);
+                dispatch({
+                    type: ActionType.SetTradeAction,
+                    payload: { trades: res.trades, statements: res.statements },
+                });
+            } catch (e) {
+                console.log('Error reading API response', e);
+            }
         }
     };
 
