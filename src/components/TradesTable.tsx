@@ -10,7 +10,10 @@ import { DataGrid } from '@mui/x-data-grid';
 //   }));
 
 const columns = [
-    { field: 'positionId', headerName: 'Trade', width: 100 },
+    { field: 'positionId', headerName: 'ID', width: 60 },
+    { field: 'securityType', headerName: 'Type', width: 70 },
+    { field: 'durationMin', headerName: 'Duration', width: 100, type: 'number' },
+    { field: 'direction', headerName: 'L/S', width: 82 },
     { field: 'symbol', headerName: 'Symbol', width: 200 },
     { field: 'quantity', headerName: 'Qty', width: 100 },
     { field: 'entryPrice', headerName: 'Open', width: 130 },
@@ -18,9 +21,6 @@ const columns = [
     { field: 'pnl', headerName: 'PnL', width: 120, type: 'number' },
     { field: 'entryDateTime', headerName: 'Entry date', width: 150, type: 'date' },
     { field: 'exitDateTime', headerName: 'Exit date', width: 150, type: 'date' },
-    { field: 'durationMin', headerName: 'Duration', width: 140, type: 'number' },
-    { field: 'direction', headerName: 'L/S', width: 82 },
-    { field: 'securityType', headerName: 'Type', width: 120 },
 ];
 
 export const TradesTable: React.FC = () => {
