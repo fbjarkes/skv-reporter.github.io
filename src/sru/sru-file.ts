@@ -5,6 +5,9 @@ import { TradeType } from '../types/trade';
 import { K4Form } from '../types/k4-form';
 import format from 'date-fns/format';
 
+const COMMODITY_FUTURE_SYMBOL_PREFIXES = ['CL', 'GC'];
+const MICRO_COMMODITY_FUTURE_SYMBOL_PREFIXES = ['MCL', 'MGC'];
+
 export class SRUInfo {
     id?: string;
     name?: string;
@@ -15,6 +18,17 @@ export class SRUInfo {
     taxYear?: number;
 }
 
+export const isCommodityFuture = (symbol: string) => {
+    if (symbol.length == 5) {
+        // e.g. MCLX1
+        return MICRO_COMMODITY_FUTURE_SYMBOL_PREFIXES.includes(symbol.slice(0, 3));
+    }
+    if (symbol.length == 4) {
+        // e.g. CLX1
+        return COMMODITY_FUTURE_SYMBOL_PREFIXES.includes(symbol.slice(0, 2));
+    }
+    return false;
+};
 export class SRUFile {
     sruInfo?: SRUInfo;
     title = 'SKV-Reporter';
@@ -37,6 +51,7 @@ export class SRUFile {
             case 'FUT': {
                 // TODO: FX/Bond futures: TYPE_C
                 // TODO: Commodity futures: TYPE_D
+
                 return K4_TYPE.TYPE_A;
             }
             case 'OPT': {

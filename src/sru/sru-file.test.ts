@@ -3,7 +3,7 @@ import format from 'date-fns/format';
 import chaiAsPromised from 'chai-as-promised';
 import { K4Form } from '../types/k4-form';
 import { TradeType } from '../types/trade';
-import { SRUFile, SRUInfo } from './sru-file';
+import { isCommodityFuture, SRUFile, SRUInfo } from './sru-file';
 import { K4_TYPE, Statement } from '../types/statement';
 
 chai.use(chaiAsPromised);
@@ -11,6 +11,7 @@ chai.use(chaiAsPromised);
 describe('SRU Files', () => {
     const fxRates: Map<string, Map<string, number>> = new Map(
         Object.entries({
+            '2021-01-11': new Map(Object.entries({ 'USD/SEK': 10 })),
             '2021-01-10': new Map(Object.entries({ 'USD/SEK': 9.1 })),
             '2020-01-10': new Map(Object.entries({ 'USD/SEK': 9.1 })),
             '2017-09-22': new Map(Object.entries({ 'USD/SEK': 7.98 })),
@@ -38,6 +39,7 @@ describe('SRU Files', () => {
         t.pnl = pnl;
         t.transactionType = 'ExchTrade';
         t.currency = 'USD';
+        t.direction = qty > 0 ? 'LONG' : 'SHORT';
         return t;
     };
 
@@ -301,39 +303,79 @@ describe('SRU Files', () => {
 
         it('should calculate totals for each type');
 
+        it('should determine future type based on symbol', () => {
+            expect(isCommodityFuture('ESM2')).to.be.false;
+            expect(isCommodityFuture('MESH2')).to.be.false;
+            expect(isCommodityFuture('SPY')).to.be.false;
+            expect(isCommodityFuture('OMXS301C')).to.be.false;
+            expect(isCommodityFuture('CLM2')).to.be.true;
+            expect(isCommodityFuture('MCLM2')).to.be.true;
+            expect(isCommodityFuture('GCM1')).to.be.true;
+            expect(isCommodityFuture('MGCM1')).to.be.true;
+        });
+
         it.skip('should do commodity futures in Type D section', () => {
-            const t1 = _createTrade('MCLX1', 50005, 50105, 5, 100);
-            const t2 = _createTrade('MGCM1', 30005, 29905, 5, -100);
+            const _createFutTrade = (
+                symbol: string,
+                cost: number,
+                proceeds: number,
+                comm: number,
+                pnl: number,
+                qty = 1,
+                secType = 'FUT',
+            ): TradeType => {
+                const t = new TradeType();
+                t.exitDateTime = '2021-01-11'; // USD/SEK is 10
+                t.symbol = symbol;
+                t.description = '...';
+                t.quantity = qty;
+                t.securityType = secType;
+                t.proceeds = proceeds;
+                t.cost = cost;
+                t.commission = comm;
+                t.pnl = pnl;
+                t.transactionType = 'ExchTrade';
+                t.currency = 'USD';
+                t.direction = qty > 0 ? 'LONG' : 'SHORT';
+                return t;
+            };
+            const t1 = _createFutTrade('MCLX1', 1000, 1010, 1, 9, 1); // 1 LONG with +9 pnl
+            const t2 = _createFutTrade('MCLX1', 1000, 1010, 1, -11, -1); // 1 SHORT with -11 pnl
+            // const t3 = _createTrade('MCLX1', 1000, 9900, 1, -105, 1, 'FUT');
+            // const t4 = _createTrade('MCLX1', 1000, 9800, 1, -105, -1, 'FUT');
+            // const t5 = _createTrade('MGCM1', 2000, 2010, 2, 90, 1, 'FUT');
+            // const t6 = _createTrade('MGCM1', 2000, 2000, 2, , 1, 'FUT');
+            // const t7 = _createTrade('MGCM1', 2000, 1900, 2, -110, 1, 'FUT');
+            // const t8 = _createTrade('MGCM1', 2000, 2020, 2, -190, 1, 'FUT');
             const sru = new SRUFile(fxRates, [t1, t2]);
             const statements = sru.getStatements();
             const form = new K4Form('K4-2021P4', 1, '19900101-1234', new Date(2021, 0, 1, 14, 30, 0), statements);
+            const expectedLines = [
+                '#BLANKETT K4-2021P4',
+                '#IDENTITET 19900101-1234 20210101 143000',
+                '#UPPGIFT 7014 1',
+                // T1
+                '#UPPGIFT 3410 1',
+                '#UPPGIFT 3411 MCLX1',
+                '#UPPGIFT 3412 10100', // 1010*10
+                '#UPPGIFT 3413 10010', // (1000+1)*10
+                '#UPPGIFT 3414 90', // 9*10
+                // T2
+                '#UPPGIFT 3420 1',
+                '#UPPGIFT 3421 MCLX1',
+                '#UPPGIFT 3422 10000', // 1000*10
+                '#UPPGIFT 3423 10110', // (1010+1)*10
+                '#UPPGIFT 3425 110', // -11*10
 
-            // const expectedLines = [
-            //     '#BLANKETT K4-2021P4',
-            //     '#IDENTITET 19900101-1234 20210101 143000',
-            //     '#UPPGIFT 7014 1',
-            //     // T1
-            //     '#UPPGIFT 3410 100',
-            //     '#UPPGIFT 3101 SPY ...',
-            //     '#UPPGIFT 3102 9109',
-            //     '#UPPGIFT 3103 8199',
-            //     '#UPPGIFT 3104 910',
-            //     // T2
-            //     '#UPPGIFT 3110 100',
-            //     '#UPPGIFT 3111 QQQ ...',
-            //     '#UPPGIFT 3112 8199',
-            //     '#UPPGIFT 3113 9109',
-            //     '#UPPGIFT 3115 910',
-
-            //     // Sum
-            //     `#UPPGIFT 3300 ${totalProceeds}`,
-            //     `#UPPGIFT 3301 ${totalCost}`,
-            //     `#UPPGIFT 3304 ${totalProfit}`,
-            //     `#UPPGIFT 3305 ${totalLoss}`,
-            //     '#BLANKETTSLUT',
-            // ];
-            // const lines = form.generateLines();
-            // expect(lines).to.have.members(expectedLines);
+                // Sum
+                `#UPPGIFT 3500 ${10100 + 10000}`,
+                `#UPPGIFT 3501 ${10010 + 10110}`,
+                `#UPPGIFT 3503 ${90}`,
+                `#UPPGIFT 3504 ${110}`,
+                '#BLANKETTSLUT',
+            ];
+            const lines = form.generateLines();
+            expect(lines).to.have.members(expectedLines);
         });
         it.skip('should do index futures in Type A section');
     });
