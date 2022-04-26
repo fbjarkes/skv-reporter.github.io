@@ -297,7 +297,7 @@ describe('SRU Files', () => {
                 `#UPPGIFT 3305 ${totalLoss}`,
                 '#BLANKETTSLUT',
             ];
-            const lines = form.generateLines();
+            const lines = form.generateLinesTypeA();
             expect(lines).to.have.members(expectedLines);
         });
 
@@ -314,7 +314,7 @@ describe('SRU Files', () => {
             expect(isCommodityFuture('MGCM1')).to.be.true;
         });
 
-        it.skip('should do commodity futures in Type D section', () => {
+        it('should do commodity futures in Type D section', () => {
             const _createFutTrade = (
                 symbol: string,
                 cost: number,
@@ -341,7 +341,7 @@ describe('SRU Files', () => {
             };
             const t1 = _createFutTrade('MCLX1', 1000, 1010, 1, 9, 1); // 1 LONG with +9 pnl
             const t2 = _createFutTrade('MCLX1', 1000, 1010, 1, -11, -1); // 1 SHORT with -11 pnl
-            // const t3 = _createTrade('MCLX1', 1000, 9900, 1, -105, 1, 'FUT');
+            // const t3 = _createTrade('MCLX1 ...', 1000, 9900, 1, -105, 1, 'FUT');
             // const t4 = _createTrade('MCLX1', 1000, 9800, 1, -105, -1, 'FUT');
             // const t5 = _createTrade('MGCM1', 2000, 2010, 2, 90, 1, 'FUT');
             // const t6 = _createTrade('MGCM1', 2000, 2000, 2, , 1, 'FUT');
@@ -356,13 +356,13 @@ describe('SRU Files', () => {
                 '#UPPGIFT 7014 1',
                 // T1
                 '#UPPGIFT 3410 1',
-                '#UPPGIFT 3411 MCLX1',
+                '#UPPGIFT 3411 MCLX1 ...',
                 '#UPPGIFT 3412 10100', // 1010*10
                 '#UPPGIFT 3413 10010', // (1000+1)*10
                 '#UPPGIFT 3414 90', // 9*10
                 // T2
                 '#UPPGIFT 3420 1',
-                '#UPPGIFT 3421 MCLX1',
+                '#UPPGIFT 3421 MCLX1 ...',
                 '#UPPGIFT 3422 10000', // 1000*10
                 '#UPPGIFT 3423 10110', // (1010+1)*10
                 '#UPPGIFT 3425 110', // -11*10
@@ -374,7 +374,7 @@ describe('SRU Files', () => {
                 `#UPPGIFT 3504 ${110}`,
                 '#BLANKETTSLUT',
             ];
-            const lines = form.generateLines();
+            const lines = form.generateLinesTypeD();
             expect(lines).to.have.members(expectedLines);
         });
         it.skip('should do index futures in Type A section');

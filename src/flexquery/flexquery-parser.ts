@@ -83,6 +83,7 @@ const schema: JSONSchemaType<MyData> = {
         _fifoPnlRealized: { type: 'string' },
     },
     required: [
+        // TODO: consider to only require symbol, currency, fifoPnlRealized, openCloseIndicator and assetCategory
         '_currency',
         '_assetCategory',
         '_symbol',

@@ -50,9 +50,11 @@ export class SRUFile {
             }
             case 'FUT': {
                 // TODO: FX/Bond futures: TYPE_C
-                // TODO: Commodity futures: TYPE_D
-
-                return K4_TYPE.TYPE_A;
+                if (isCommodityFuture(trade.symbol)) {
+                    return K4_TYPE.TYPE_D;
+                } else {
+                    return K4_TYPE.TYPE_A;
+                }
             }
             case 'OPT': {
                 return K4_TYPE.TYPE_A;
@@ -155,7 +157,8 @@ export class SRUFile {
 
             let formData: string[] = [];
             forms.forEach((f: K4Form) => {
-                const lines = f.generateLines();
+                const lines = f.generateLinesTypeA();
+                // TODO: typeD
                 formData = formData.concat(lines);
             });
             formData.push('#FIL_SLUT');
