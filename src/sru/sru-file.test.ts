@@ -26,9 +26,35 @@ describe('SRU Files', () => {
         pnl: number,
         qty = 100,
         secType = 'STK',
+        exitDate = '2020-01-10',
     ): TradeType => {
         const t = new TradeType();
-        t.exitDateTime = '2020-01-10';
+        t.exitDateTime = exitDate;
+        t.symbol = symbol;
+        t.description = '...';
+        t.quantity = qty;
+        t.securityType = secType;
+        t.proceeds = proceeds;
+        t.cost = cost;
+        t.commission = comm;
+        t.pnl = pnl;
+        t.transactionType = 'ExchTrade';
+        t.currency = 'USD';
+        t.direction = qty > 0 ? 'LONG' : 'SHORT';
+        return t;
+    };
+
+    const _createFutTrade = (
+        symbol: string,
+        cost: number,
+        proceeds: number,
+        comm: number,
+        pnl: number,
+        qty = 1,
+        secType = 'FUT',
+    ): TradeType => {
+        const t = new TradeType();
+        t.exitDateTime = '2021-01-11'; // USD/SEK is 10
         t.symbol = symbol;
         t.description = '...';
         t.quantity = qty;
@@ -190,7 +216,7 @@ describe('SRU Files', () => {
             t2.pnl = 1;
 
             const sru = new SRUFile(fxRates, [t1, t2], { taxYear: 2021 });
-            expect(() => sru.getStatements()).to.throw(/statement for tax year 2021/);
+            expect(() => sru.getStatements()).to.throw(/Unexpected statement for tax year '2021'/);
         });
         it('should throw error when missing FX rate for trade which must be converted', () => {
             const t1 = new TradeType();
@@ -315,30 +341,6 @@ describe('SRU Files', () => {
         });
 
         it('should do commodity futures in Type D section', () => {
-            const _createFutTrade = (
-                symbol: string,
-                cost: number,
-                proceeds: number,
-                comm: number,
-                pnl: number,
-                qty = 1,
-                secType = 'FUT',
-            ): TradeType => {
-                const t = new TradeType();
-                t.exitDateTime = '2021-01-11'; // USD/SEK is 10
-                t.symbol = symbol;
-                t.description = '...';
-                t.quantity = qty;
-                t.securityType = secType;
-                t.proceeds = proceeds;
-                t.cost = cost;
-                t.commission = comm;
-                t.pnl = pnl;
-                t.transactionType = 'ExchTrade';
-                t.currency = 'USD';
-                t.direction = qty > 0 ? 'LONG' : 'SHORT';
-                return t;
-            };
             const t1 = _createFutTrade('MCLX1', 1000, 1010, 1, 9, 1); // 1 LONG with +9 pnl
             const t2 = _createFutTrade('MCLX1', 1000, 1010, 1, -11, -1); // 1 SHORT with -11 pnl
             // const t3 = _createTrade('MCLX1 ...', 1000, 9900, 1, -105, 1, 'FUT');
@@ -378,5 +380,28 @@ describe('SRU Files', () => {
             expect(lines).to.have.members(expectedLines);
         });
         it.skip('should do index futures in Type A section');
+    });
+
+    describe('getSRUPackage', () => {
+        it('should generate SRU packages', () => {
+            const t1 = _createTrade('SPY', 900, 1001, 10, 100, 100, 'STK', '2021-01-11');
+            const t2 = _createFutTrade('MNQM1', 900, 1001, 1, 100);
+            const t3 = _createFutTrade('MCLM1', 900, 1001, 1, 100);
+            const sru = new SRUFile(fxRates, [t1, t2, t3], { name: 'TEST', taxYear: 2021 });
+
+            const packages = sru.getSRUPackages();
+            expect(packages).to.have.lengthOf(1);
+            expect(packages[0].totals).to.have.lengthOf(2);
+            expect(packages[0].totals[0].type).to.equal(K4_TYPE.TYPE_A);
+            expect(packages[0].totals[0].totalReceived).to.equal(1001 * 10 + 1001 * 10);
+            expect(packages[0].totals[0].totalPaid).to.equal((900 + 10) * 10 + (900 + 1) * 10);
+            expect(packages[0].totals[0].totalLoss).to.equal(0);
+            expect(packages[0].totals[0].totalProfit).to.equal(100 * 10 + 100 * 10);
+            expect(packages[0].totals[1].type).to.equal(K4_TYPE.TYPE_D);
+            expect(packages[0].totals[1].totalReceived).to.equal(1001 * 10);
+            expect(packages[0].totals[1].totalPaid).to.equal((900 + 1) * 10);
+            expect(packages[0].totals[1].totalLoss).to.equal(0);
+            expect(packages[0].totals[1].totalProfit).to.equal(100 * 10);
+        });
     });
 });

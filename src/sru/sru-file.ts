@@ -1,4 +1,4 @@
-import { chunk } from 'lodash';
+import { chunk, sumBy } from 'lodash';
 import { K4_TYPE, Statement } from '../types/statement';
 import { TradeType } from '../types/trade';
 //import { logger } from '../logging'; // TODO: only import in non-browser environment
@@ -8,7 +8,7 @@ import format from 'date-fns/format';
 const COMMODITY_FUTURE_SYMBOL_PREFIXES = ['CL', 'GC'];
 const MICRO_COMMODITY_FUTURE_SYMBOL_PREFIXES = ['MCL', 'MGC'];
 
-export class SRUInfo {
+export type SRUInfo = {
     id?: string;
     name?: string;
     surname?: string;
@@ -16,7 +16,28 @@ export class SRUInfo {
     code?: string;
     city?: string;
     taxYear?: number;
-}
+};
+
+export type SRUPackage = {
+    info?: SRUInfo;
+    forms: K4Form[];
+    statements: Statement[];
+    totals: K4TypeTotals[];
+    // typeA_totalProfit?: number; // 7.4
+    // typeA_totalLoss?: number; // 8.3
+    // typeC_totalProfit?: number; // 7.2
+    // typeC_totalLoss?: number; // 8.1
+    // typeD_totalProfit?: number; // 7.5
+    // typeD_totalLoss?: number; // 8.4
+};
+
+export type K4TypeTotals = {
+    type: K4_TYPE;
+    totalProfit: number;
+    totalLoss: number;
+    totalPaid: number;
+    totalReceived: number;
+};
 
 export const isCommodityFuture = (symbol: string) => {
     if (symbol.length == 5) {
@@ -72,7 +93,7 @@ export class SRUFile {
             let paid, received;
 
             if (this.sruInfo?.taxYear && this.sruInfo?.taxYear !== Number(trade.exitDateTime.substring(0, 4))) {
-                throw new Error(`Unexpected statement for tax year ${this.sruInfo?.taxYear}`);
+                throw new Error(`Unexpected statement for tax year '${this.sruInfo?.taxYear}' in trade '${trade}'`);
             }
 
             if (!this.supportedCurrencies.includes(trade.currency)) {
@@ -134,10 +155,72 @@ export class SRUFile {
         ];
     }
 
+    // TODO: move to sru-file-helper.ts?
     static splitStatements(statements: Statement[]): Statement[][] {
         // TODO: max 9 TYPE_A, 7 TYPE_C, 7 TYPE_D
         const statements_a = statements.filter((s: Statement) => s.type === K4_TYPE.TYPE_A);
         return chunk(statements_a, 9);
+    }
+
+    getSRUPackages(): SRUPackage[] {
+        //const packages: SRUPackage[] = [];
+        const title = `K4-${this.sruInfo?.taxYear}P4`;
+        const allStatements = this.getStatements();
+        console.log('Handling total statements:', allStatements.length);
+
+        const packages = chunk(allStatements, 400).map((statements: Statement[]) => {
+            const forms: K4Form[] = [];
+            let page = 1;
+            const statements_a = statements.filter((s: Statement) => s.type === K4_TYPE.TYPE_A);
+            const statements_d = statements.filter((s: Statement) => s.type === K4_TYPE.TYPE_D);
+            console.log(`Handling ${statements_a.length} TYPE_A, ${statements_d.length} TYPE_D`);
+            // TYPE_A
+            chunk(statements_a, 9).forEach((statements_a_chunk: Statement[]) => {
+                const form = new K4Form(title, page++, this.sruInfo?.id || '', this.createDate, statements_a_chunk);
+                forms.push(form);
+            });
+            // TYPE_D
+            chunk(statements_d, 7).forEach((statements_d_chunk: Statement[]) => {
+                const form = new K4Form(title, page++, this.sruInfo?.id || '', this.createDate, statements_d_chunk);
+                forms.push(form);
+            });
+            // TYPE_C....
+
+            const typeA_totals: K4TypeTotals = {
+                type: K4_TYPE.TYPE_A,
+                totalProfit: sumBy(
+                    statements_a.filter((s) => s.pnl > 0),
+                    'pnl',
+                ),
+                totalLoss: sumBy(
+                    statements_a.filter((s) => s.pnl < 0),
+                    'pnl',
+                ),
+                totalPaid: sumBy(statements_a, 'paid'),
+                totalReceived: sumBy(statements_a, 'received'),
+            };
+            const typeD_totals: K4TypeTotals = {
+                type: K4_TYPE.TYPE_D,
+                totalProfit: sumBy(
+                    statements_d.filter((s) => s.pnl > 0),
+                    'pnl',
+                ),
+                totalLoss: sumBy(
+                    statements_d.filter((s) => s.pnl < 0),
+                    'pnl',
+                ),
+                totalPaid: sumBy(statements_d, 'paid'),
+                totalReceived: sumBy(statements_d, 'received'),
+            };
+            const p: SRUPackage = {
+                info: this.sruInfo,
+                statements: statements,
+                forms: forms,
+                totals: [typeA_totals, typeD_totals],
+            };
+            return p;
+        });
+        return packages;
     }
 
     getFormData(): string[][] {
@@ -157,9 +240,9 @@ export class SRUFile {
 
             let formData: string[] = [];
             forms.forEach((f: K4Form) => {
-                const lines = f.generateLinesTypeA();
-                // TODO: typeD
-                formData = formData.concat(lines);
+                const lines_A = f.generateLinesTypeA();
+                const lines_D = f.generateLinesTypeD();
+                formData = formData.concat(lines_A);
             });
             formData.push('#FIL_SLUT');
             files.push(formData);

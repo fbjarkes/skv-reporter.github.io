@@ -19,6 +19,7 @@ export class K4Form {
     }
 
     public generateLinesTypeA(): string[] {
+        //TODO: check max TYPA_A statements length now
         const str = format(this.created, DATETIME_FORMAT);
         const lines = [`#BLANKETT ${this.title}`, `#IDENTITET ${this.id} ${str}`, `#UPPGIFT 7014 ${this.pageNumber}`];
 
@@ -60,6 +61,7 @@ export class K4Form {
     }
 
     public generateLinesTypeD(): string[] {
+        // TODO: check max typeD statements here
         const str = format(this.created, DATETIME_FORMAT);
         const lines = [`#BLANKETT ${this.title}`, `#IDENTITET ${this.id} ${str}`, `#UPPGIFT 7014 ${this.pageNumber}`];
 
