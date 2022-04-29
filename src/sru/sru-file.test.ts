@@ -3,7 +3,7 @@ import format from 'date-fns/format';
 import chaiAsPromised from 'chai-as-promised';
 import { K4Form } from '../types/k4-form';
 import { TradeType } from '../types/trade';
-import { isCommodityFuture, SRUFile, SRUInfo } from './sru-file';
+import { generateBlanketterFile, isCommodityFuture, SRUFile, SRUInfo } from './sru-file';
 import { K4_TYPE, Statement } from '../types/statement';
 
 chai.use(chaiAsPromised);
@@ -402,6 +402,59 @@ describe('SRU Files', () => {
             expect(packages[0].totals[1].totalPaid).to.equal((900 + 1) * 10);
             expect(packages[0].totals[1].totalLoss).to.equal(0);
             expect(packages[0].totals[1].totalProfit).to.equal(100 * 10);
+        });
+        it('should generate blanketter.sru data for each SRUPackage', () => {
+            const t1 = _createTrade('SPY', 900, 1001, 10, 100, 100, 'STK', '2021-01-11');
+            const t2 = _createFutTrade('MNQM1', 900, 1001, 1, 100);
+            const t3 = _createFutTrade('MCLM1', 900, 1001, 1, 100);
+            const sru = new SRUFile(
+                fxRates,
+                [t1, t2, t3],
+                { name: 'TEST', taxYear: 2021, id: '19900101-1234' },
+                new Date(2022, 0, 1, 14, 30, 0),
+            );
+
+            const packages = sru.getSRUPackages();
+            const expectedLines = [
+                '#BLANKETT K4-2021P4',
+                '#IDENTITET 19900101-1234 20220101 143000',
+                '#UPPGIFT 7014 1',
+                // T1
+                '#UPPGIFT 3100 100',
+                '#UPPGIFT 3101 SPY ...',
+                `#UPPGIFT 3102 ${1001 * 10}`,
+                `#UPPGIFT 3103 ${(900 + 10) * 10}`,
+                `#UPPGIFT 3104 ${100 * 10}`,
+                // T2
+                '#UPPGIFT 3110 1',
+                '#UPPGIFT 3111 MNQM1 ...',
+                `#UPPGIFT 3112 ${1001 * 10}`,
+                `#UPPGIFT 3113 ${(900 + 1) * 10}`,
+                `#UPPGIFT 3114 ${100 * 10}`,
+                // Sum
+                `#UPPGIFT 3300 ${1001 * 10 + 1001 * 10}`,
+                `#UPPGIFT 3301 ${(900 + 10) * 10 + (900 + 1) * 10}`,
+                `#UPPGIFT 3304 ${100 * 10 + 100 * 10}`,
+                `#UPPGIFT 3305 ${0}`,
+                '#BLANKETTSLUT',
+                // T3
+                '#BLANKETT K4-2021P4',
+                '#IDENTITET 19900101-1234 20220101 143000',
+                '#UPPGIFT 7014 2',
+                '#UPPGIFT 3410 1',
+                '#UPPGIFT 3411 MCLM1 ...',
+                `#UPPGIFT 3412 ${1001 * 10}`,
+                `#UPPGIFT 3413 ${(900 + 1) * 10}`,
+                `#UPPGIFT 3414 ${100 * 10}`,
+                // SUM
+                `#UPPGIFT 3500 ${1001 * 10}`,
+                `#UPPGIFT 3501 ${(900 + 1) * 10}`,
+                `#UPPGIFT 3503 ${100 * 10}`,
+                `#UPPGIFT 3504 ${0}`,
+                '#BLANKETTSLUT',
+                '#FIL_SLUT',
+            ];
+            expect(generateBlanketterFile(packages[0].forms)).to.have.members(expectedLines);
         });
     });
 });

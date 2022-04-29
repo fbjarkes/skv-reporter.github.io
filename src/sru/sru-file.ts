@@ -39,6 +39,22 @@ export type K4TypeTotals = {
     totalReceived: number;
 };
 
+export const generateBlanketterFile = (forms: K4Form[]): string[] => {
+    let data: string[] = [];
+    forms.forEach((f: K4Form) => {
+        if (f.type === K4_TYPE.TYPE_A) {
+            data = data.concat(f.generateLinesTypeA());
+        } else if (f.type === K4_TYPE.TYPE_D) {
+            data = data.concat(f.generateLinesTypeD());
+        } else {
+            throw new Error('Unknown form type');
+        }
+    });
+    data.push('#FIL_SLUT');
+    // TODO: assert size < 5mb
+    return data;
+};
+
 export const isCommodityFuture = (symbol: string) => {
     if (symbol.length == 5) {
         // e.g. MCLX1
@@ -58,10 +74,11 @@ export class SRUFile {
     createDate = new Date();
     supportedCurrencies = ['SEK', 'USD'];
 
-    constructor(fxRates: Map<string, Map<string, number>>, trades: TradeType[], data?: SRUInfo) {
+    constructor(fxRates: Map<string, Map<string, number>>, trades: TradeType[], data?: SRUInfo, date = new Date()) {
         this.sruInfo = data;
         this.fxRates = fxRates;
         this.trades = trades;
+        this.createDate = date;
     }
 
     toK4Type(trade: TradeType): K4_TYPE {
@@ -176,16 +193,31 @@ export class SRUFile {
             console.log(`Handling ${statements_a.length} TYPE_A, ${statements_d.length} TYPE_D`);
             // TYPE_A
             chunk(statements_a, 9).forEach((statements_a_chunk: Statement[]) => {
-                const form = new K4Form(title, page++, this.sruInfo?.id || '', this.createDate, statements_a_chunk);
+                const form = new K4Form(
+                    title,
+                    page++,
+                    this.sruInfo?.id || '',
+                    this.createDate,
+                    statements_a_chunk,
+                    K4_TYPE.TYPE_A,
+                );
                 forms.push(form);
             });
             // TYPE_D
             chunk(statements_d, 7).forEach((statements_d_chunk: Statement[]) => {
-                const form = new K4Form(title, page++, this.sruInfo?.id || '', this.createDate, statements_d_chunk);
+                const form = new K4Form(
+                    title,
+                    page++,
+                    this.sruInfo?.id || '',
+                    this.createDate,
+                    statements_d_chunk,
+                    K4_TYPE.TYPE_D,
+                );
                 forms.push(form);
             });
             // TYPE_C....
 
+            // TODO: sum totals from K4Forms instead which is technically what happens in reality?
             const typeA_totals: K4TypeTotals = {
                 type: K4_TYPE.TYPE_A,
                 totalProfit: sumBy(

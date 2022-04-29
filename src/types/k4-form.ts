@@ -9,13 +9,22 @@ export class K4Form {
     id: string;
     created: Date; // On format 20210101 143000
     statements: Statement[];
+    type: K4_TYPE;
 
-    constructor(title: string, pageNumber: number, id: string, date: Date, statements: Statement[]) {
+    constructor(
+        title: string,
+        pageNumber: number,
+        id: string,
+        date: Date,
+        statements: Statement[],
+        type = K4_TYPE.TYPE_A,
+    ) {
         this.title = title;
         this.pageNumber = pageNumber;
         this.id = id;
         this.statements = statements;
         this.created = date;
+        this.type = type;
     }
 
     public generateLinesTypeA(): string[] {
