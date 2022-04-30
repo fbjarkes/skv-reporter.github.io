@@ -1,15 +1,15 @@
 export enum K4_TYPE {
-    TYPE_A,
-    TYPE_B,
-    TYPE_C,
-    TYPE_D,
+    TYPE_A = 'TYPE_A',
+    TYPE_B = 'TYPE_B',
+    TYPE_C = 'TYPE_C',
+    TYPE_D = 'TYPE_D',
 }
 
 export enum K4_SEC_TYPE {
-    STOCK,
-    OPTION,
-    FUTURE,
-    UNKNOWN,
+    STOCK = 'STOCK',
+    OPTION = 'OPTION',
+    FUTURE = 'FUTURE',
+    UNKNOWN = 'UNKNOWN',
 }
 
 export class Statement {
