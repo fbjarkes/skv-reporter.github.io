@@ -5,6 +5,13 @@ export enum K4_TYPE {
     TYPE_D,
 }
 
+export enum K4_SEC_TYPE {
+    STOCK,
+    OPTION,
+    FUTURE,
+    UNKNOWN,
+}
+
 export class Statement {
     id: number;
     symbol: string; // TODO: max 80 chars
@@ -14,6 +21,7 @@ export class Statement {
     pnl: number;
     type: K4_TYPE;
     date: string;
+    securityType: K4_SEC_TYPE;
 
     constructor(
         id: number,
@@ -24,6 +32,7 @@ export class Statement {
         pnl: number,
         type: K4_TYPE,
         date: string,
+        securityType: K4_SEC_TYPE,
     ) {
         this.id = id;
         this.quantity = Math.abs(quantity);
@@ -33,9 +42,10 @@ export class Statement {
         this.pnl = Math.round(pnl);
         this.type = type;
         this.date = date;
+        this.securityType = securityType;
     }
 
     public toString(): string {
-        return `${this.symbol} (${this.type}) ${this.date}: qty=${this.quantity} paid=${this.paid}, received=${this.received}, pnl=${this.pnl}`;
+        return `${this.symbol} (${this.securityType}) (${this.type}) ${this.date}: qty=${this.quantity} paid=${this.paid}, received=${this.received}, pnl=${this.pnl}`;
     }
 }

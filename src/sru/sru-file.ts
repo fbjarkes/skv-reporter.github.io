@@ -1,5 +1,5 @@
 import { chunk, sumBy } from 'lodash';
-import { K4_TYPE, Statement } from '../types/statement';
+import { K4_SEC_TYPE, K4_TYPE, Statement } from '../types/statement';
 import { TradeType } from '../types/trade';
 //import { logger } from '../logging'; // TODO: only import in non-browser environment
 import { K4Form } from '../types/k4-form';
@@ -42,6 +42,44 @@ export type K4TypeTotals = {
     totalStatements: number;
 };
 
+// --- internal functions ---
+const toK4Type = (trade: TradeType): K4_TYPE => {
+    switch (trade.securityType) {
+        case 'STK': {
+            return K4_TYPE.TYPE_A;
+        }
+        case 'FUT': {
+            // TODO: FX/Bond futures: TYPE_C
+            if (isCommodityFuture(trade.symbol)) {
+                return K4_TYPE.TYPE_D;
+            } else {
+                return K4_TYPE.TYPE_A;
+            }
+        }
+        case 'OPT': {
+            return K4_TYPE.TYPE_A;
+        }
+        // Crypto: TYPE_D
+    }
+    throw new Error(`Unexpected trade security type: ${trade.securityType}`);
+};
+
+const toK4SecType = (trade: TradeType): K4_SEC_TYPE => {
+    switch (trade.securityType) {
+        case 'STK': {
+            return K4_SEC_TYPE.STOCK;
+        }
+        case 'FUT': {
+            return K4_SEC_TYPE.FUTURE;
+        }
+        case 'OPT': {
+            return K4_SEC_TYPE.OPTION;
+        }
+    }
+    return K4_SEC_TYPE.UNKNOWN;
+};
+
+// --- public functions ---
 export const generateBlanketterFile = (forms: K4Form[]): string[] => {
     let data: string[] = [];
     forms.forEach((f: K4Form) => {
@@ -96,27 +134,6 @@ export class SRUFile {
         this.createDate = date;
     }
 
-    toK4Type(trade: TradeType): K4_TYPE {
-        switch (trade.securityType) {
-            case 'STK': {
-                return K4_TYPE.TYPE_A;
-            }
-            case 'FUT': {
-                // TODO: FX/Bond futures: TYPE_C
-                if (isCommodityFuture(trade.symbol)) {
-                    return K4_TYPE.TYPE_D;
-                } else {
-                    return K4_TYPE.TYPE_A;
-                }
-            }
-            case 'OPT': {
-                return K4_TYPE.TYPE_A;
-            }
-            // Crypto: TYPE_D
-        }
-        throw new Error(`Unexpected trade security type: ${trade.securityType}`);
-    }
-
     getStatements(): Statement[] {
         const statements: Statement[] = [];
         let id = 0;
@@ -154,8 +171,9 @@ export class SRUFile {
                 paid,
                 received,
                 pnl,
-                this.toK4Type(trade),
+                toK4Type(trade),
                 trade.exitDateTime,
+                toK4SecType(trade),
             );
 
             if (trade.openClose === 'C;O') {

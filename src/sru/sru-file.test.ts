@@ -4,7 +4,7 @@ import chaiAsPromised from 'chai-as-promised';
 import { K4Form } from '../types/k4-form';
 import { TradeType } from '../types/trade';
 import { generateBlanketterFile, isCommodityFuture, SRUFile, SRUInfo } from './sru-file';
-import { K4_TYPE, Statement } from '../types/statement';
+import { K4_SEC_TYPE, K4_TYPE, Statement } from '../types/statement';
 
 chai.use(chaiAsPromised);
 
@@ -165,7 +165,9 @@ describe('SRU Files', () => {
         });
 
         it('should split statements according to K4 form limits', () => {
-            const statements = new Array(19).fill(new Statement(0, 100, 'SPY', 100, 100, 0, K4_TYPE.TYPE_A, ''));
+            const statements = new Array(19).fill(
+                new Statement(0, 100, 'SPY', 100, 100, 0, K4_TYPE.TYPE_A, '', K4_SEC_TYPE.STOCK),
+            );
             const chunks = SRUFile.splitStatements(statements);
             expect(chunks[0]).to.be.of.length(9);
             expect(chunks[1]).to.be.of.length(9);
