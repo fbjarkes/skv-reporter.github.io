@@ -6,6 +6,7 @@ import Ajv, { JSONSchemaType } from 'ajv';
 import { logger } from '../logging';
 import { TradeType } from '../types/trade';
 import { connectTrades } from './utils';
+import { sumBy } from 'lodash';
 
 const FQ_DATETIME_FORMAT = 'yyyyMMdd;HHmmss'; // TODO: To be configurable in .env?
 const FQ_DATE_FORMAT = 'yyyyMMdd';
@@ -246,22 +247,29 @@ export class FlexQueryParser {
 
         // Add Entry dates for closing trades
         connectTrades(this.#trades);
-        logger.info(`Parsed: XML data (${size}mb) with ${this.#trades.length} trades, ${this.#rates.size} rates`);
-        //return this.#trades.filter((t) => t.openClose === 'C' || t.openClose === 'C;O'); // TODO: return status object instead
+        logger.info(
+            `Parsed: XML data (${size.toFixed(2)}mb), found ${this.#trades.length} trades and ${
+                this.#rates.size
+            } FX mappings`,
+        );
+
+        const usdTrades = this.#trades.filter((t) => t.currency === 'USD');
+        const nonUsdTrades = this.#trades.filter((t) => t.currency !== 'USD');
         return {
             tradesCount: this.#trades.length,
-            winnersCount: winners,
-            losersCount: losers,
-            tradePnl: pnl,
-            totalComm: totalCommission,
-            stkTradesCount: stkCount,
-            optTradesCount: optCount,
-            futTradesCount: futCount,
+            winnersCount: this.#trades.filter((t) => t.pnl > 0).length,
+            losersCount: this.#trades.filter((t) => t.pnl <= 0).length,
+            tradePnl: sumBy(usdTrades, (t) => t.pnl),
+            tradePnlNonUsd: sumBy(nonUsdTrades, (t) => t.pnl),
+            totalComm: sumBy(usdTrades, (t) => t.commission),
+            stkTradesCount: this.#trades.filter((t) => t.securityType === 'STK').length,
+            optTradesCount: this.#trades.filter((t) => t.securityType === 'OPT').length,
+            futTradesCount: this.#trades.filter((t) => t.securityType === 'FUT').length,
             firstTradeDate: firstTradeDate,
             lastTradeDate: lastTradeDate,
             largestLoser: largestLoser,
             largestWinner: largestWinner,
-            tradesNonUSDCount: nonUsdCount,
+            tradesNonUSDCount: this.#trades.filter((t) => t.currency !== 'USD').length,
             tradesUnhandledCount: this.#unhandled.length,
             ratesCount: this.#rates.size,
         };
