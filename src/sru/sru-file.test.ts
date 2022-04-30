@@ -456,5 +456,19 @@ describe('SRU Files', () => {
             ];
             expect(generateBlanketterFile(packages[0].forms)).to.have.members(expectedLines);
         });
+
+        it('should throw error when erroneous data', () => {
+            expect(() => new SRUFile(fxRates, [], undefined).getSRUPackages()).to.throw(/Missing SRU info/);
+            expect(() => new SRUFile(fxRates, [], { name: 'TEST' }).getSRUPackages()).to.throw(
+                /Invalid SRU info: taxYear/,
+            );
+            expect(() => new SRUFile(fxRates, [], { name: 'TEST', taxYear: 2021 }).getSRUPackages()).to.throw(
+                /Invalid SRU info: id/,
+            );
+        });
+    });
+
+    describe('generateBlanketterFile', () => {
+        //const validForm = new K4Form('K4-2021P4', 1, '19900101-1234', new Date(2021, 0, 1, 14, 30, 0), new Array(9).fill(new Statement(0, 100, 'SPY', 100, 100, 0, K4_TYPE.TYPE_A, '')));
     });
 });

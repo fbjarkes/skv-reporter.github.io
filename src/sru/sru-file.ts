@@ -37,6 +37,8 @@ export type K4TypeTotals = {
     totalLoss: number;
     totalPaid: number;
     totalReceived: number;
+    totalPnl: number;
+    totalStatements: number;
 };
 
 export const generateBlanketterFile = (forms: K4Form[]): string[] => {
@@ -53,6 +55,18 @@ export const generateBlanketterFile = (forms: K4Form[]): string[] => {
     data.push('#FIL_SLUT');
     // TODO: assert size < 5mb
     return data;
+};
+
+export const validateSRUInfo = (info?: SRUInfo) => {
+    if (!info) throw Error('Missing SRU info');
+    if (!info.taxYear) throw Error('Invalid SRU info: taxYear');
+    if (!info.id) throw Error('Invalid SRU info: id');
+    if (!info.name) throw Error('Invalid SRU info: name');
+    if (!info.surname) throw Error('Invalid SRU info: surname');
+    if (!info.mail) throw Error('Invalid SRU info: mail');
+    if (!info.code) throw Error('Invalid SRU info: code');
+    if (!info.city) throw Error('Invalid SRU info: city');
+    return true;
 };
 
 export const isCommodityFuture = (symbol: string) => {
@@ -180,7 +194,7 @@ export class SRUFile {
     }
 
     getSRUPackages(): SRUPackage[] {
-        //const packages: SRUPackage[] = [];
+        validateSRUInfo(this.sruInfo);
         const title = `K4-${this.sruInfo?.taxYear}P4`;
         const allStatements = this.getStatements();
         console.log('Handling total statements:', allStatements.length);
@@ -230,6 +244,8 @@ export class SRUFile {
                 ),
                 totalPaid: sumBy(statements_a, 'paid'),
                 totalReceived: sumBy(statements_a, 'received'),
+                totalPnl: sumBy(statements_a, 'pnl'),
+                totalStatements: statements_a.length,
             };
             const typeD_totals: K4TypeTotals = {
                 type: K4_TYPE.TYPE_D,
@@ -243,6 +259,8 @@ export class SRUFile {
                 ),
                 totalPaid: sumBy(statements_d, 'paid'),
                 totalReceived: sumBy(statements_d, 'received'),
+                totalPnl: sumBy(statements_d, 'pnl'),
+                totalStatements: statements_d.length,
             };
             const p: SRUPackage = {
                 info: this.sruInfo,
