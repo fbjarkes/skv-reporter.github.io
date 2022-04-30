@@ -201,7 +201,7 @@ export class FlexQueryParser {
                     }
                     this.#trades.push(t);
                 } else {
-                    logger.info(`Not handling FQTrade: ${item}`);
+                    logger.info(`Not handling FQTrade:`, item);
                 }
             });
         }
