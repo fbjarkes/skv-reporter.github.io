@@ -14,7 +14,8 @@ describe('FlexQueryParser', () => {
 
     it('should parse single STK trade', async () => {
         const testFileData = await fs.readFile('test/fixtures/trade1.xml', 'utf8');
-        const trades = flexParser.parse(testFileData);
+        flexParser.parse(testFileData);
+        const trades = flexParser.getClosingTrades();
 
         expect(trades[0]).to.not.be.undefined;
         expect(trades[0].symbol).to.equal('ABC');
@@ -27,7 +28,8 @@ describe('FlexQueryParser', () => {
 
     it('should get all data for a STK trade', async () => {
         const testFileData = await fs.readFile('test/fixtures/trade2.xml', 'utf8');
-        const trades = flexParser.parse(testFileData);
+        flexParser.parse(testFileData);
+        const trades = flexParser.getClosingTrades();
         expect(trades).to.have.lengthOf(2);
 
         expect(trades[0].symbol).to.equal('UWM');
@@ -47,7 +49,8 @@ describe('FlexQueryParser', () => {
 
     it('should handle exercised stock option', async () => {
         const testFileData = await fs.readFile('test/fixtures/option_exercised.xml', 'utf8');
-        const trades = flexParser.parse(testFileData);
+        flexParser.parse(testFileData);
+        const trades = flexParser.getClosingTrades();
         expect(trades).to.have.lengthOf(2);
         expect(trades[0].symbol).to.equal('BA');
         expect(trades[0].securityType).to.equal('STK');
@@ -60,7 +63,8 @@ describe('FlexQueryParser', () => {
 
     it('should handle "O;C" trades', async () => {
         const testFileData = await fs.readFile('test/fixtures/trade_open_closed_1.xml', 'utf8');
-        const trades = flexParser.parse(testFileData);
+        flexParser.parse(testFileData);
+        const trades = flexParser.getClosingTrades();
         expect(trades).to.have.lengthOf(3);
         // Buy 5 (5 long), sell 3 (2 long), sell 3 (1 short), sell 2 (3 short), buy 3 (flat)
         expect(trades[0].pnl.toFixed(2)).to.equal('18.55');
@@ -91,7 +95,8 @@ describe('FlexQueryParser', () => {
 
     it('should handle short trades', async () => {
         const testFileData = await fs.readFile('test/fixtures/trade3.xml', 'utf8');
-        const trades = flexParser.parse(testFileData);
+        flexParser.parse(testFileData);
+        const trades = flexParser.getClosingTrades();
         expect(trades).to.have.lengthOf(2);
         expect(trades[0].quantity).to.equal(1); // QTY is pos. for short closing trades
         expect(trades[1].quantity).to.equal(-1);
@@ -99,7 +104,8 @@ describe('FlexQueryParser', () => {
 
     it('should have entry datetime for closing trade', async () => {
         const testFileData = await fs.readFile('test/fixtures/trade1.xml', 'utf8');
-        const trades = flexParser.parse(testFileData);
+        flexParser.parse(testFileData);
+        const trades = flexParser.getClosingTrades();
         expect(trades).to.have.lengthOf(1);
         expect(trades[0].entryDateTime).to.equal('2015-03-26 16:00');
     });

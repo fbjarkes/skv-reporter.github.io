@@ -159,22 +159,15 @@ export class SRUFile {
             );
 
             if (trade.openClose === 'C;O') {
-                //logger.info(`Found C;O statement: ${statement}`);
+                logger.info(`Found C;O statement: ${statement}`);
             }
             if (Math.abs(pnl) < 1) {
-                //logger.info(`Skipping trade with < 1SEK: ${statement.toString()}`);
-                console.log(`Skipping trade with < 1SEK: ${statement.toString()}`);
+                logger.info(`Skipping trade with < 1SEK: ${statement.toString()}`);
+                //console.log(`Skipping trade with < 1SEK: ${statement.toString()}`);
             } else {
                 //logger.info(`Adding: ${statement.toString()}`);
-                //console.log(`Adding: ${statement.toString()}`);
+                console.log(`Adding: ${statement.toString()}`);
                 statements.push(statement);
-            }
-            if (statement.paid - statement.received !== statement.pnl) {
-                console.log(
-                    `INVALID PNL: ${statement.pnl} (${statement.paid} - ${statement.received} = ${
-                        statement.paid - statement.received
-                    }) for ${statement}`,
-                );
             }
         });
         return statements;
@@ -210,28 +203,6 @@ export class SRUFile {
         const title = `K4-${this.sruInfo?.taxYear}P4`;
         const allStatements = this.getStatements();
         console.log('Handling total statements:', allStatements.length);
-        // let totalLoss = 0;
-        // let totalProfit = 0;
-        // let totalPnl = 0
-        // let totalPaid = 0;
-        // let totalReceived = 0;
-        // allStatements.forEach((s: Statement) => {
-        //     if (s.pnl > 0) {
-        //         totalProfit += s.pnl;
-        //     } else {
-        //         totalLoss += Math.abs(s.pnl);
-        //     }
-        //     totalPaid += s.paid;
-        //     totalReceived += s.received;
-        //     totalPnl += s.pnl;
-        // });
-        // console.log("Statements ======");
-        // console.log("Total loss:", totalLoss);
-        // console.log("Total profit:", totalProfit);
-        // console.log("Total pnl:", totalPnl);
-        // console.log("Total paid:", totalPaid);
-        // console.log("Total received:", totalReceived);
-        // console.log("======");
 
         // TODO: estimate number of packages based on number of statements? (5mb per package)
         const packages = chunk(allStatements, 3500).map((statements: Statement[]) => {

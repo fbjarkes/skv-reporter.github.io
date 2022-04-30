@@ -151,8 +151,7 @@ export class FlexQueryParser {
     }
 
     public getClosingTrades(): TradeType[] {
-        //return this.#trades.filter((t) => t.openClose === 'C' || t.openClose === 'C;O');
-        return this.#trades.filter((t) => t.openClose === 'C;O');
+        return this.#trades.filter((t) => t.openClose === 'C' || t.openClose === 'C;O');
     }
 
     public getAllTrades(): TradeType[] {
@@ -163,16 +162,24 @@ export class FlexQueryParser {
         return this.#rates;
     }
 
-    public parse(fileData: string): TradeType[] {
+    public parse(fileData: string) {
         const xmlData = parser.parse(fileData, this.options);
         const size = fileData.length / 1024 / 1024;
-        let pnl = 0;
-        let flexTrades = 0;
-        let rates = 0;
+        let winners = 0,
+            losers = 0,
+            pnl = 0,
+            totalCommission = 0,
+            stkCount = 0,
+            optCount = 0,
+            futCount = 0,
+            nonUsdCount = 0,
+            largestLoser = 0,
+            largestWinner = 0,
+            firstTradeDate = '',
+            lastTradeDate = '';
         // TODO: handle 'xmlData.FlexQueryStatements['count'] > 1
         if (xmlData.FlexQueryResponse.FlexStatements.FlexStatement.Trades.Trade) {
             xmlData.FlexQueryResponse.FlexStatements.FlexStatement.Trades.Trade.forEach((item: FQTrade) => {
-                flexTrades++;
                 if (
                     item._openCloseIndicator === 'C' ||
                     item._openCloseIndicator === 'O' ||
@@ -211,7 +218,6 @@ export class FlexQueryParser {
                         t.direction = item._quantity > 0 ? 'LONG' : 'SHORT';
                     }
                     this.#trades.push(t);
-                    pnl += t.pnl;
                 } else {
                     logger.warn(`Not handling FQTrade with O/C indicator '${item._openCloseIndicator}'`);
                     logger.debug(item);
@@ -240,14 +246,24 @@ export class FlexQueryParser {
 
         // Add Entry dates for closing trades
         connectTrades(this.#trades);
-        logger.info(`Parsed: XML data (${size}mb) with ${flexTrades} trades, ${rates} rates and total PNL: ${pnl}`);
-        return this.#trades.filter((t) => t.openClose === 'C' || t.openClose === 'C;O'); // TODO: return status object instead
-        // return: total PNL, total trades, total rates, total unhandled trades, total STK, OPT, FUT trades, winners, losers, exexercised options etc.
-        // commoditity futures
-        // C;O trades
-        // total commissions
-        // first trade date, last trade date
-        // biggest loser, biggest winner
-        // NON-USD trades
+        logger.info(`Parsed: XML data (${size}mb) with ${this.#trades.length} trades, ${this.#rates.size} rates`);
+        //return this.#trades.filter((t) => t.openClose === 'C' || t.openClose === 'C;O'); // TODO: return status object instead
+        return {
+            tradesCount: this.#trades.length,
+            winnersCount: winners,
+            losersCount: losers,
+            tradePnl: pnl,
+            totalComm: totalCommission,
+            stkTradesCount: stkCount,
+            optTradesCount: optCount,
+            futTradesCount: futCount,
+            firstTradeDate: firstTradeDate,
+            lastTradeDate: lastTradeDate,
+            largestLoser: largestLoser,
+            largestWinner: largestWinner,
+            tradesNonUSDCount: nonUsdCount,
+            tradesUnhandledCount: this.#unhandled.length,
+            ratesCount: this.#rates.size,
+        };
     }
 }
