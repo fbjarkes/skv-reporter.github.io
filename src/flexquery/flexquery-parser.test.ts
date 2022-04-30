@@ -62,9 +62,13 @@ describe('FlexQueryParser', () => {
         const testFileData = await fs.readFile('test/fixtures/trade_open_closed_1.xml', 'utf8');
         const trades = flexParser.parse(testFileData);
         expect(trades).to.have.lengthOf(3);
+        // Buy 5 (5 long), sell 3 (2 long), sell 3 (1 short), sell 2 (3 short), buy 3 (flat)
         expect(trades[0].pnl.toFixed(2)).to.equal('18.55');
+        expect(trades[0].direction).to.equal('LONG');
         expect(trades[1].pnl.toFixed(2)).to.equal('1.57');
+        expect(trades[1].direction).to.equal('LONG');
         expect(trades[2].pnl.toFixed(2)).to.equal('-0.09');
+        expect(trades[2].direction).to.equal('SHORT');
     });
     it('should get FX mappings', async () => {
         const testFileData = await fs.readFile('test/fixtures/option_exercised.xml', 'utf8');

@@ -101,23 +101,23 @@ describe('SRU Files', () => {
     describe('SRU statements', () => {
         it('should create valid statement from closing trades', () => {
             const t1 = new TradeType();
-            t1.exitDateTime = '2020-01-10';
+            t1.exitDateTime = '2021-01-11';
             t1.symbol = 'SPY';
             t1.description = 'SPY ETF...';
-            t1.quantity = 10;
+            t1.quantity = -10;
             t1.securityType = 'STK';
             t1.proceeds = 1000;
-            t1.cost = 900;
-            t1.commission = 1.5;
+            t1.cost = -900;
+            t1.commission = -1;
             t1.transactionType = 'ExchTrade';
-            t1.pnl = 98.5; // 1000 - (900 + 1.5)
+            t1.pnl = 99;
             t1.currency = 'USD';
-
+            t1.openClose = 'C';
             const sru = new SRUFile(fxRates, [t1]);
             const statements = sru.getStatements();
-            expect(statements[0].pnl).to.equal(Math.round(98.5 * 9.1));
-            expect(statements[0].paid).to.equal(Math.round(901.5 * 9.1));
-            expect(statements[0].received).to.equal(Math.round(1000 * 9.1));
+            expect(statements[0].pnl).to.equal(Math.round(99 * 10));
+            expect(statements[0].paid).to.equal(Math.round(-1 * (-900 - 1) * 10));
+            expect(statements[0].received).to.equal(Math.round(1000 * 10));
         });
 
         it('should create statement for non-USD trade correctly', () => {
@@ -243,6 +243,44 @@ describe('SRU Files', () => {
             t1.currency = 'EUR';
             const sru = new SRUFile(fxRates, [t1]);
             expect(() => sru.getStatements()).to.throw(/Unsupported currency 'EUR'/);
+        });
+        it('should handle "C;O" trades correctly', () => {
+            const t1 = new TradeType('M2KU1', -1, 2219.2, 0, '2021-01-11', '2021-01-11');
+            t1.openClose = 'O';
+            t1.securityType = 'FUT';
+            t1.cost = -11095.48;
+            t1.commission = -0.52;
+            t1.proceeds = -11096;
+            t1.pnl = 0;
+            t1.currency = 'USD';
+            const t2 = new TradeType('M2KU1', 2, 0, 2240.5, '2021-01-11', '2021-01-11');
+            t2.openClose = 'C;O';
+            t2.securityType = 'FUT';
+            t2.cost = 11095.48;
+            t2.commission = -1.04;
+            t2.proceeds = -22405;
+            t2.pnl = -107.54;
+            t2.direction = 'SHORT';
+            t2.currency = 'USD';
+            const t3 = new TradeType('M2KU1', -1, 0, 2232, '2021-01-11', '2021-01-11');
+            t3.openClose = 'C';
+            t3.securityType = 'FUT';
+            t3.cost = -11203.02;
+            t3.commission = -0.52;
+            t3.proceeds = 11160;
+            t3.pnl = -43.54;
+            t3.direction = 'LONG';
+            t3.currency = 'USD';
+            const sru = new SRUFile(fxRates, [t1, t2, t3]);
+            const statements = sru.getStatements();
+            expect(statements).to.be.of.length(2);
+            expect(statements[0].pnl).to.equal(Math.round(-107.54 * 10));
+            expect(statements[1].pnl).to.equal(Math.round(-43.54 * 10));
+            // TODO: what should it really be?
+            //expect(statements[0].paid).to.equal(0);
+            //expect(statements[0].proceeds).to.equal(0);
+            //expect(statements[1].paid).to.equal(0);
+            //expect(statements[1].proceeds).to.equal(0);
         });
     });
 

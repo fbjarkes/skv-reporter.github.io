@@ -1,0 +1,13 @@
+<FlexQueryResponse queryName="" type="AF">
+<FlexStatements count="1">
+<FlexStatement accountId="U1234567" fromDate="20210104" toDate="20210120" period="MonthToDate" whenGenerated="20220424;025917">
+<Trades>
+    <Trade currency="USD" assetCategory="FUT" fxRateToBase="1" symbol="M2KU1" description="M2K 17SEP21" reportDate="20210811" tradeDate="20210811" transactionType="ExchTrade" quantity="-1" tradePrice="2219.2" proceeds="11096" ibCommission="-0.52" ibCommissionCurrency="USD" closePrice="2248.7" fifoPnlRealized="0" buySell="SELL" cost="-11095.48" openCloseIndicator="O" openDateTime="" dateTime="20210811;111543" orderTime="20210811;111543" holdingPeriodDateTime="" whenRealized="" />
+    <Trade currency="USD" assetCategory="FUT" fxRateToBase="1" symbol="M2KU1" description="M2K 17SEP21" reportDate="20210811" tradeDate="20210811" transactionType="ExchTrade" quantity="2" tradePrice="2240.5" proceeds="-22405" ibCommission="-1.04" ibCommissionCurrency="USD" closePrice="2248.7" fifoPnlRealized="-107.54" buySell="BUY" cost="11095.48" openCloseIndicator="C;O" openDateTime="" dateTime="20210811;143242" orderTime="20210811;143242" holdingPeriodDateTime="" whenRealized="" />
+    <Trade currency="USD" assetCategory="FUT" fxRateToBase="1" symbol="M2KU1" description="M2K 17SEP21" reportDate="20210812" tradeDate="20210812" transactionType="ExchTrade" quantity="-1" tradePrice="2232" proceeds="11160" ibCommission="-0.52" ibCommissionCurrency="USD" closePrice="2242.5" fifoPnlRealized="-43.54" buySell="SELL" cost="-11203.02" openCloseIndicator="C" openDateTime="" dateTime="20210812;101659" orderTime="20210812;100257" holdingPeriodDateTime="" whenRealized="" />
+</Trades>
+<ConversionRates>
+</ConversionRates>
+</FlexStatement>
+</FlexStatements>
+</FlexQueryResponse>

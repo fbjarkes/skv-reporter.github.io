@@ -151,7 +151,8 @@ export class FlexQueryParser {
     }
 
     public getClosingTrades(): TradeType[] {
-        return this.#trades.filter((t) => t.openClose === 'C');
+        //return this.#trades.filter((t) => t.openClose === 'C' || t.openClose === 'C;O');
+        return this.#trades.filter((t) => t.openClose === 'C;O');
     }
 
     public getAllTrades(): TradeType[] {
@@ -241,5 +242,12 @@ export class FlexQueryParser {
         connectTrades(this.#trades);
         logger.info(`Parsed: XML data (${size}mb) with ${flexTrades} trades, ${rates} rates and total PNL: ${pnl}`);
         return this.#trades.filter((t) => t.openClose === 'C' || t.openClose === 'C;O'); // TODO: return status object instead
+        // return: total PNL, total trades, total rates, total unhandled trades, total STK, OPT, FUT trades, winners, losers, exexercised options etc.
+        // commoditity futures
+        // C;O trades
+        // total commissions
+        // first trade date, last trade date
+        // biggest loser, biggest winner
+        // NON-USD trades
     }
 }

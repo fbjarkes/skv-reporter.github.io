@@ -4,6 +4,7 @@ import { TradeType } from '../types/trade';
 //import { logger } from '../logging'; // TODO: only import in non-browser environment
 import { K4Form } from '../types/k4-form';
 import format from 'date-fns/format';
+import { logger } from '../logging';
 
 const COMMODITY_FUTURE_SYMBOL_PREFIXES = ['CL', 'GC'];
 const MICRO_COMMODITY_FUTURE_SYMBOL_PREFIXES = ['MCL', 'MGC'];
@@ -156,13 +157,24 @@ export class SRUFile {
                 this.toK4Type(trade),
                 trade.exitDateTime,
             );
+
+            if (trade.openClose === 'C;O') {
+                //logger.info(`Found C;O statement: ${statement}`);
+            }
             if (Math.abs(pnl) < 1) {
                 //logger.info(`Skipping trade with < 1SEK: ${statement.toString()}`);
                 console.log(`Skipping trade with < 1SEK: ${statement.toString()}`);
             } else {
                 //logger.info(`Adding: ${statement.toString()}`);
-                console.log(`Adding: ${statement.toString()}`);
+                //console.log(`Adding: ${statement.toString()}`);
                 statements.push(statement);
+            }
+            if (statement.paid - statement.received !== statement.pnl) {
+                console.log(
+                    `INVALID PNL: ${statement.pnl} (${statement.paid} - ${statement.received} = ${
+                        statement.paid - statement.received
+                    }) for ${statement}`,
+                );
             }
         });
         return statements;
