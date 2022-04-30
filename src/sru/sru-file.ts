@@ -198,8 +198,31 @@ export class SRUFile {
         const title = `K4-${this.sruInfo?.taxYear}P4`;
         const allStatements = this.getStatements();
         console.log('Handling total statements:', allStatements.length);
+        // let totalLoss = 0;
+        // let totalProfit = 0;
+        // let totalPnl = 0
+        // let totalPaid = 0;
+        // let totalReceived = 0;
+        // allStatements.forEach((s: Statement) => {
+        //     if (s.pnl > 0) {
+        //         totalProfit += s.pnl;
+        //     } else {
+        //         totalLoss += Math.abs(s.pnl);
+        //     }
+        //     totalPaid += s.paid;
+        //     totalReceived += s.received;
+        //     totalPnl += s.pnl;
+        // });
+        // console.log("Statements ======");
+        // console.log("Total loss:", totalLoss);
+        // console.log("Total profit:", totalProfit);
+        // console.log("Total pnl:", totalPnl);
+        // console.log("Total paid:", totalPaid);
+        // console.log("Total received:", totalReceived);
+        // console.log("======");
 
-        const packages = chunk(allStatements, 400).map((statements: Statement[]) => {
+        // TODO: estimate number of packages based on number of statements? (5mb per package)
+        const packages = chunk(allStatements, 3500).map((statements: Statement[]) => {
             const forms: K4Form[] = [];
             let page = 1;
             const statements_a = statements.filter((s: Statement) => s.type === K4_TYPE.TYPE_A);

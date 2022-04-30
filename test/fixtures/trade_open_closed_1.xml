@@ -1,0 +1,15 @@
+<FlexQueryResponse queryName="" type="AF">
+<FlexStatements count="1">
+<FlexStatement accountId="U1234567" fromDate="20210104" toDate="20210120" period="MonthToDate" whenGenerated="20220424;025917">
+<Trades>
+    <Trade currency="USD" assetCategory="STK" fxRateToBase="1" symbol="ESTC" description="ELASTIC NV" reportDate="20211025" tradeDate="20211025" transactionType="ExchTrade" quantity="5" tradePrice="171.29" proceeds="-856.45" ibCommission="-0.34525725" ibCommissionCurrency="USD" closePrice="173.02" fifoPnlRealized="0" buySell="BUY" cost="856.79525725" openCloseIndicator="O" openDateTime="" dateTime="20211025;093603" orderTime="20211025;093603" holdingPeriodDateTime="" whenRealized="" />
+    <Trade currency="USD" assetCategory="STK" fxRateToBase="1" symbol="ESTC" description="ELASTIC NV" reportDate="20211026" tradeDate="20211026" transactionType="ExchTrade" quantity="-3" tradePrice="177.66" proceeds="532.98" ibCommission="-0.350332448" ibCommissionCurrency="USD" closePrice="171.92" fifoPnlRealized="18.552513" buySell="SELL" cost="-514.077154" openCloseIndicator="C" openDateTime="" dateTime="20211026;101639" orderTime="20211026;085136" holdingPeriodDateTime="" whenRealized="" />
+    <Trade currency="USD" assetCategory="STK" fxRateToBase="1" symbol="ESTC" description="ELASTIC NV" reportDate="20211026" tradeDate="20211026" transactionType="ExchTrade" quantity="-3" tradePrice="172.26" proceeds="516.78" ibCommission="-0.353849828" ibCommissionCurrency="USD" closePrice="171.92" fifoPnlRealized="1.565997" buySell="SELL" cost="-342.718103" openCloseIndicator="C;O" openDateTime="" dateTime="20211026;124059" orderTime="20211026;094646" holdingPeriodDateTime="" whenRealized="" />
+    <Trade currency="USD" assetCategory="STK" fxRateToBase="1" symbol="ESTC" description="ELASTIC NV" reportDate="20211026" tradeDate="20211026" transactionType="ExchTrade" quantity="-2" tradePrice="172.33" proceeds="344.66" ibCommission="-0.002395766" ibCommissionCurrency="USD" closePrice="171.92" fifoPnlRealized="0" buySell="SELL" cost="-344.657604234" openCloseIndicator="O" openDateTime="" dateTime="20211026;124059" orderTime="20211026;094646" holdingPeriodDateTime="" whenRealized="" />
+    <Trade currency="USD" assetCategory="STK" fxRateToBase="1" symbol="ESTC" description="ELASTIC NV" reportDate="20211026" tradeDate="20211026" transactionType="ExchTrade" quantity="3" tradePrice="172.18" proceeds="-516.54" ibCommission="-0.35085725" ibCommissionCurrency="USD" closePrice="171.92" fifoPnlRealized="-0.091203" buySell="BUY" cost="516.799654" openCloseIndicator="C" openDateTime="" dateTime="20211026;124120" orderTime="20211026;124120" holdingPeriodDateTime="" whenRealized="" />
+</Trades>
+<ConversionRates>
+</ConversionRates>
+</FlexStatement>
+</FlexStatements>
+</FlexQueryResponse>

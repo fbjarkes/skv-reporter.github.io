@@ -387,7 +387,15 @@ describe('SRU Files', () => {
             const t1 = _createTrade('SPY', 900, 1001, 10, 100, 100, 'STK', '2021-01-11');
             const t2 = _createFutTrade('MNQM1', 900, 1001, 1, 100);
             const t3 = _createFutTrade('MCLM1', 900, 1001, 1, 100);
-            const sru = new SRUFile(fxRates, [t1, t2, t3], { name: 'TEST', taxYear: 2021 });
+            const sru = new SRUFile(fxRates, [t1, t2, t3], {
+                name: 'TEST',
+                surname: 'TEST',
+                mail: 'TEST',
+                code: '123 45',
+                city: 'TEST',
+                taxYear: 2021,
+                id: '19900101-1234',
+            });
 
             const packages = sru.getSRUPackages();
             expect(packages).to.have.lengthOf(1);
@@ -410,7 +418,15 @@ describe('SRU Files', () => {
             const sru = new SRUFile(
                 fxRates,
                 [t1, t2, t3],
-                { name: 'TEST', taxYear: 2021, id: '19900101-1234' },
+                {
+                    name: 'TEST',
+                    surname: 'TEST',
+                    mail: 'TEST',
+                    code: '123 45',
+                    city: 'TEST',
+                    taxYear: 2021,
+                    id: '19900101-1234',
+                },
                 new Date(2022, 0, 1, 14, 30, 0),
             );
 

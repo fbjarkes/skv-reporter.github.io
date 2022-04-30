@@ -58,6 +58,14 @@ describe('FlexQueryParser', () => {
         expect(trades[1].transactionType).to.equal('BookTrade');
     });
 
+    it('should handle "O;C" trades', async () => {
+        const testFileData = await fs.readFile('test/fixtures/trade_open_closed_1.xml', 'utf8');
+        const trades = flexParser.parse(testFileData);
+        expect(trades).to.have.lengthOf(3);
+        expect(trades[0].pnl.toFixed(2)).to.equal('18.55');
+        expect(trades[1].pnl.toFixed(2)).to.equal('1.57');
+        expect(trades[2].pnl.toFixed(2)).to.equal('-0.09');
+    });
     it('should get FX mappings', async () => {
         const testFileData = await fs.readFile('test/fixtures/option_exercised.xml', 'utf8');
         flexParser.parse(testFileData);

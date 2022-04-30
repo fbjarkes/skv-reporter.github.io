@@ -138,6 +138,7 @@ export class FlexQueryParser {
 
     #rates: Map<string, Map<string, number>> = new Map();
     #trades: TradeType[] = [];
+    #unhandled: FQTrade[] = [];
 
     toDateString(dateTime: string): string {
         // TODO: default to 'New_York/America' tz?
@@ -163,10 +164,19 @@ export class FlexQueryParser {
 
     public parse(fileData: string): TradeType[] {
         const xmlData = parser.parse(fileData, this.options);
-
+        const size = fileData.length / 1024 / 1024;
+        let pnl = 0;
+        let flexTrades = 0;
+        let rates = 0;
+        // TODO: handle 'xmlData.FlexQueryStatements['count'] > 1
         if (xmlData.FlexQueryResponse.FlexStatements.FlexStatement.Trades.Trade) {
             xmlData.FlexQueryResponse.FlexStatements.FlexStatement.Trades.Trade.forEach((item: FQTrade) => {
-                if (item._openCloseIndicator === 'C' || item._openCloseIndicator === 'O') {
+                flexTrades++;
+                if (
+                    item._openCloseIndicator === 'C' ||
+                    item._openCloseIndicator === 'O' ||
+                    item._openCloseIndicator === 'C;O'
+                ) {
                     if (!validate(item)) {
                         const messages: string[] = [];
                         validate.errors?.forEach((e) => {
@@ -190,7 +200,7 @@ export class FlexQueryParser {
                     t.transactionType = item._transactionType;
                     t.openClose = item._openCloseIndicator;
 
-                    if (item._openCloseIndicator === 'C') {
+                    if (item._openCloseIndicator === 'C' || item._openCloseIndicator === 'C;O') {
                         t.exitPrice = Number(item._tradePrice);
                         t.exitDateTime = this.toDateString(item._dateTime);
                         t.direction = item._quantity < 0 ? 'LONG' : 'SHORT';
@@ -200,8 +210,11 @@ export class FlexQueryParser {
                         t.direction = item._quantity > 0 ? 'LONG' : 'SHORT';
                     }
                     this.#trades.push(t);
+                    pnl += t.pnl;
                 } else {
-                    logger.info(`Not handling FQTrade:`, item);
+                    logger.warn(`Not handling FQTrade with O/C indicator '${item._openCloseIndicator}'`);
+                    logger.debug(item);
+                    this.#unhandled.push(item);
                 }
             });
         }
@@ -226,7 +239,7 @@ export class FlexQueryParser {
 
         // Add Entry dates for closing trades
         connectTrades(this.#trades);
-
-        return this.#trades.filter((t) => t.openClose === 'C');
+        logger.info(`Parsed: XML data (${size}mb) with ${flexTrades} trades, ${rates} rates and total PNL: ${pnl}`);
+        return this.#trades.filter((t) => t.openClose === 'C' || t.openClose === 'C;O'); // TODO: return status object instead
     }
 }
