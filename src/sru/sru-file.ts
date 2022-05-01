@@ -91,6 +91,41 @@ export const generateBlanketterFileData = (forms: K4Form[]): string[] => {
     return data;
 };
 
+export const totalsFileData = (totals: K4TypeTotals[]): string[] => {
+    const _add_totals = (t: K4TypeTotals): string[] => {
+        return [
+            `${t.type} TOTALS`,
+            `Total profit: ${t.totalProfit}`,
+            `Total loss: ${t.totalLoss}`,
+            `Total paid: ${t.totalPaid}`,
+            `Total received: ${t.totalReceived}`,
+            `Total pnl: ${t.totalPnl}`,
+            `Total statements: ${t.totalStatements}`,
+            ``,
+        ];
+    };
+    const _add_instructions = (t: K4TypeTotals): string[] => {
+        if (t.type === K4_TYPE.TYPE_A) {
+            return [
+                `Add and sum total profit '${t.totalProfit}'} to 7.4`,
+                `Add and sum (positive) total loss '${Math.abs(t.totalLoss)}' to 8.3`,
+            ];
+        }
+        if (t.type === K4_TYPE.TYPE_D) {
+            return [
+                `Add and sum total profit '${t.totalProfit}' to 7.5`,
+                `Add and sum (positive) total loss '${Math.abs(t.totalLoss)}' to 8.3`,
+            ];
+        }
+        // TODO: TYPE_C
+        return [];
+    };
+    let data = totals.map((t) => {
+        return [..._add_totals(t), ..._add_instructions(t), ''];
+    });
+    return data.flat();
+};
+
 export const validateSRUInfo = (info?: SRUInfo) => {
     if (!info) throw Error('Missing SRU info');
     if (!info.taxYear) throw Error('Invalid SRU info: taxYear');
@@ -190,7 +225,7 @@ export class SRUFile {
             );
 
             if (trade.openClose === 'C;O') {
-                //logger.info(`Found C;O statement: ${statement}`);
+                logger.info(`Found C;O statement: ${statement}`);
             }
             if (Math.abs(pnl) < 1) {
                 logger.info(`Skipping trade with < 1SEK: ${statement.toString()}`);
@@ -221,12 +256,6 @@ export class SRUFile {
             '#MEDIELEV_SLUT',
         ];
     }
-
-    // static splitStatements(statements: Statement[]): Statement[][] {
-    //     // TODO: max 9 TYPE_A, 7 TYPE_C, 7 TYPE_D
-    //     const statements_a = statements.filter((s: Statement) => s.type === K4_TYPE.TYPE_A);
-    //     return chunk(statements_a, 9);
-    // }
 
     getSRUPackages(): SRUPackage[] {
         validateSRUInfo(this.sruInfo);
@@ -309,32 +338,4 @@ export class SRUFile {
         });
         return packages;
     }
-
-    // getFormData(): string[][] {
-    //     const files: string[][] = [];
-
-    //     const statementChunks = SRUFile.splitStatements(this.getStatements());
-    //     const formChunks = chunk(statementChunks, 400);
-
-    //     formChunks.forEach((chunks) => {
-    //         const forms: K4Form[] = [];
-
-    //         let page = 1;
-    //         chunks.forEach((chunk: Statement[]) => {
-    //             const form = new K4Form('K4-2020P4', page++, this.sruInfo?.id || '', this.createDate, chunk);
-    //             forms.push(form);
-    //         });
-
-    //         let formData: string[] = [];
-    //         forms.forEach((f: K4Form) => {
-    //             const lines_A = f.generateLinesTypeA();
-    //             const lines_D = f.generateLinesTypeD();
-    //             formData = formData.concat(lines_A);
-    //         });
-    //         formData.push('#FIL_SLUT');
-    //         files.push(formData);
-    //     });
-
-    //     return files;
-    // }
 }
