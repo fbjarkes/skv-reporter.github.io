@@ -9,19 +9,6 @@ import { DataGrid } from '@mui/x-data-grid';
 //     }
 //   }));
 
-const displayType = (params: any) => {
-    switch (params.row.type) {
-        case K4_TYPE.TYPE_A:
-            return 'A';
-        case K4_TYPE.TYPE_B:
-            return 'B';
-        case K4_TYPE.TYPE_C:
-            return 'C';
-        case K4_TYPE.TYPE_D:
-            return 'D';
-    }
-};
-
 const columns = [
     { field: 'id', headerName: 'ID', width: 100 },
     { field: 'quantity', headerName: 'Qty', width: 100 },
@@ -31,9 +18,8 @@ const columns = [
     { field: 'pnl', headerName: 'PnL', width: 120, type: 'number' },
     {
         field: 'type',
-        headerName: 'K4',
+        headerName: 'K4 Type',
         width: 100,
-        valueGetter: displayType,
     },
     //{ field: 'exitDateTime', headerName: 'Exit date', width: 150, type: 'date' },
 ];

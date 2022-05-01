@@ -6,20 +6,18 @@ import { calculateStats } from '../utils/helper';
 
 import { TradesContext } from '../contexts/TradesContext';
 
-const Footer: React.VFC = () => {
+const TradeStats: React.VFC = () => {
     const theme = useTheme();
     const { state } = useContext(TradesContext);
-
-    const stats = calculateStats(state.filteredTrades);
     const boxMargin = theme.spacing(1, 1, 4, 1);
-
+    const stats = calculateStats(state.filteredTrades);
     return (
         <>
             <Box display="flex" justifyContent="center">
                 Trade stats (USD only)
                 <Box display="flex" flexDirection="column" style={{ margin: boxMargin }}>
                     <Typography>Trades shown: {state.filteredTrades.length} </Typography>
-                    <Typography>Total tradesYYYY: {state.trades.length} </Typography>
+                    <Typography>Total trades: {state.trades.length} </Typography>
                 </Box>
                 <Box display="flex" flexDirection="column" style={{ margin: boxMargin }}>
                     <Typography>PF: {stats.pf.toFixed(2)}</Typography>
@@ -41,4 +39,4 @@ const Footer: React.VFC = () => {
     );
 };
 
-export default Footer;
+export default TradeStats;

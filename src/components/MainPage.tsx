@@ -5,6 +5,8 @@ import parse from 'date-fns/parse';
 
 import { TradesTable } from '../components/TradesTable';
 import { ActionType, TradesContext } from '../contexts/TradesContext';
+import { calculateStats } from '../utils/helper';
+import TradeStats from './TradeStats';
 
 const MyTextField = styled(TextField)(({ theme }) => ({
     //...theme.typography.body2,
@@ -45,6 +47,7 @@ const MainPage: React.FC = () => {
     const theme = useTheme();
     const { state, dispatch } = useContext(TradesContext);
     const [selectedFileName, setSelectedFileName] = React.useState<string>('');
+
     const handleFiltersChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const newFilters = { ...state.tradeFilters, [event.target.name]: event.target.checked };
         dispatch({ type: ActionType.SetFilterAction, payload: newFilters });
@@ -214,8 +217,11 @@ const MainPage: React.FC = () => {
                     </Box>
                 </Box>
             </Grid>
-            <Grid item xs={12} style={{ margin: theme.spacing(2, 0, 5, 2) }}>
+            <Grid item xs={12} style={{ margin: theme.spacing(2, 0, 3, 2) }}>
                 <TradesTable />
+            </Grid>
+            <Grid>
+                <TradeStats />
             </Grid>
         </>
     );
