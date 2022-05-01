@@ -40,7 +40,6 @@ export class K4Form {
         const str = format(this.created, DATETIME_FORMAT);
         const lines = [`#BLANKETT ${this.title}`, `#IDENTITET ${this.id} ${str}`, `#UPPGIFT 7014 ${this.pageNumber}`];
 
-        let count_type_a = 0;
         let receivedSum = 0;
         let costSum = 0;
         let profitSum = 0;
@@ -48,24 +47,21 @@ export class K4Form {
 
         this.statements
             .filter((s: Statement) => s.type === K4_TYPE.TYPE_A)
-            .forEach((s: Statement) => {
-                // TODO: use i instead of count_typa_a?
-                lines.push(`#UPPGIFT 31${count_type_a}0 ${s.quantity}`);
-                lines.push(`#UPPGIFT 31${count_type_a}1 ${s.symbol}`);
-                lines.push(`#UPPGIFT 31${count_type_a}2 ${s.received}`);
-                lines.push(`#UPPGIFT 31${count_type_a}3 ${s.paid}`);
+            .forEach((s: Statement, i) => {
+                lines.push(`#UPPGIFT 31${i}0 ${s.quantity}`);
+                lines.push(`#UPPGIFT 31${i}1 ${s.symbol}`);
+                lines.push(`#UPPGIFT 31${i}2 ${s.received}`);
+                lines.push(`#UPPGIFT 31${i}3 ${s.paid}`);
 
                 if (s.pnl > 0) {
-                    lines.push(`#UPPGIFT 31${count_type_a}4 ${s.pnl}`);
+                    lines.push(`#UPPGIFT 31${i}4 ${s.pnl}`);
                     profitSum += s.pnl;
                 } else {
-                    lines.push(`#UPPGIFT 31${count_type_a}5 ${Math.abs(s.pnl)}`);
+                    lines.push(`#UPPGIFT 31${i}5 ${Math.abs(s.pnl)}`);
                     lossSum += Math.abs(s.pnl);
                 }
                 receivedSum += s.received;
                 costSum += s.paid;
-
-                count_type_a++;
             });
         lines.push(`#UPPGIFT 3300 ${receivedSum}`);
         lines.push(`#UPPGIFT 3301 ${costSum}`);
@@ -85,7 +81,6 @@ export class K4Form {
         const str = format(this.created, DATETIME_FORMAT);
         const lines = [`#BLANKETT ${this.title}`, `#IDENTITET ${this.id} ${str}`, `#UPPGIFT 7014 ${this.pageNumber}`];
 
-        let count_type_d = 1;
         let receivedSum = 0;
         let costSum = 0;
         let profitSum = 0;
@@ -93,26 +88,21 @@ export class K4Form {
 
         this.statements
             .filter((s: Statement) => s.type === K4_TYPE.TYPE_D)
-            .forEach((s: Statement) => {
-                lines.push(`#UPPGIFT 34${count_type_d}0 ${s.quantity}`);
-                lines.push(`#UPPGIFT 34${count_type_d}1 ${s.symbol}`);
-                lines.push(`#UPPGIFT 34${count_type_d}2 ${s.received}`);
-                lines.push(`#UPPGIFT 34${count_type_d}3 ${s.paid}`);
+            .forEach((s: Statement, i) => {
+                lines.push(`#UPPGIFT 34${i + 1}0 ${s.quantity}`);
+                lines.push(`#UPPGIFT 34${i + 1}1 ${s.symbol}`);
+                lines.push(`#UPPGIFT 34${i + 1}2 ${s.received}`);
+                lines.push(`#UPPGIFT 34${i + 1}3 ${s.paid}`);
 
                 if (s.pnl > 0) {
-                    lines.push(`#UPPGIFT 34${count_type_d}4 ${s.pnl}`);
+                    lines.push(`#UPPGIFT 34${i + 1}4 ${s.pnl}`);
                     profitSum += s.pnl;
                 } else {
-                    lines.push(`#UPPGIFT 34${count_type_d}5 ${Math.abs(s.pnl)}`);
+                    lines.push(`#UPPGIFT 34${i + 1}5 ${Math.abs(s.pnl)}`);
                     lossSum += Math.abs(s.pnl);
                 }
                 receivedSum += s.received;
                 costSum += s.paid;
-
-                count_type_d++;
-                if (count_type_d > 7) {
-                    throw new Error('Too many TYPE D records!');
-                }
             });
         lines.push(`#UPPGIFT 3500 ${receivedSum}`);
         lines.push(`#UPPGIFT 3501 ${costSum}`);
