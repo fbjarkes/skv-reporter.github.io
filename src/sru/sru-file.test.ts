@@ -3,7 +3,7 @@ import format from 'date-fns/format';
 import chaiAsPromised from 'chai-as-promised';
 import { K4Form } from '../types/k4-form';
 import { TradeType } from '../types/trade';
-import { generateBlanketterFile, isCommodityFuture, SRUFile, SRUInfo } from './sru-file';
+import { generateBlanketterFileData, isCommodityFuture, SRUFile, SRUInfo } from './sru-file';
 import { K4_SEC_TYPE, K4_TYPE, Statement } from '../types/statement';
 
 chai.use(chaiAsPromised);
@@ -78,7 +78,7 @@ describe('SRU Files', () => {
             code: '12345',
             city: 'STOCKHOLM',
         });
-        const lines = sru.getInfoData();
+        const lines = sru.getInfoFileData();
 
         const expectedLines = [
             '#DATABESKRIVNING_START',
@@ -510,7 +510,7 @@ describe('SRU Files', () => {
                 '#BLANKETTSLUT',
                 '#FIL_SLUT',
             ];
-            expect(generateBlanketterFile(packages[0].forms)).to.have.members(expectedLines);
+            expect(generateBlanketterFileData(packages[0].forms)).to.have.members(expectedLines);
         });
 
         it('should throw error when erroneous data', () => {
