@@ -116,16 +116,24 @@ export const isCommodityFuture = (symbol: string) => {
 export class SRUFile {
     sruInfo?: SRUInfo;
     title = 'SKV-Reporter';
+    statementsPerFile: number;
     trades: TradeType[];
     fxRates: Map<string, Map<string, number>>;
     createDate = new Date();
     supportedCurrencies = ['SEK', 'USD'];
 
-    constructor(fxRates: Map<string, Map<string, number>>, trades: TradeType[], data?: SRUInfo, date = new Date()) {
+    constructor(
+        fxRates: Map<string, Map<string, number>>,
+        trades: TradeType[],
+        data?: SRUInfo,
+        date = new Date(),
+        statementsPerFile = 3500,
+    ) {
         this.sruInfo = data;
         this.fxRates = fxRates;
         this.trades = trades;
         this.createDate = date;
+        this.statementsPerFile = statementsPerFile;
     }
 
     getStatements(): Statement[] {
@@ -203,26 +211,26 @@ export class SRUFile {
         ];
     }
 
-    // TODO: move to sru-file-helper.ts?
-    static splitStatements(statements: Statement[]): Statement[][] {
-        // TODO: max 9 TYPE_A, 7 TYPE_C, 7 TYPE_D
-        const statements_a = statements.filter((s: Statement) => s.type === K4_TYPE.TYPE_A);
-        return chunk(statements_a, 9);
-    }
+    // static splitStatements(statements: Statement[]): Statement[][] {
+    //     // TODO: max 9 TYPE_A, 7 TYPE_C, 7 TYPE_D
+    //     const statements_a = statements.filter((s: Statement) => s.type === K4_TYPE.TYPE_A);
+    //     return chunk(statements_a, 9);
+    // }
 
     getSRUPackages(): SRUPackage[] {
         validateSRUInfo(this.sruInfo);
         const title = `K4-${this.sruInfo?.taxYear}P4`;
         const allStatements = this.getStatements();
-        console.log('Handling total statements:', allStatements.length);
+        logger.info(
+            `Generating SRU packages for ${allStatements.length} statements with ${this.statementsPerFile} statements per file`,
+        );
 
-        // TODO: estimate number of packages based on number of statements? (5mb per package)
-        const packages = chunk(allStatements, 3500).map((statements: Statement[]) => {
+        const packages = chunk(allStatements, this.statementsPerFile).map((statements: Statement[]) => {
             const forms: K4Form[] = [];
             let page = 1;
             const statements_a = statements.filter((s: Statement) => s.type === K4_TYPE.TYPE_A);
             const statements_d = statements.filter((s: Statement) => s.type === K4_TYPE.TYPE_D);
-            logger.info(`Handling ${statements_a.length} TYPE_A, ${statements_d.length} TYPE_D`);
+            logger.info(`Handling ${statements_a.length} TYPE_A, ${statements_d.length} TYPE_D in package`);
             // TYPE_A
             chunk(statements_a, 9).forEach((statements_a_chunk: Statement[]) => {
                 const form = new K4Form(
@@ -291,31 +299,31 @@ export class SRUFile {
         return packages;
     }
 
-    getFormData(): string[][] {
-        const files: string[][] = [];
+    // getFormData(): string[][] {
+    //     const files: string[][] = [];
 
-        const statementChunks = SRUFile.splitStatements(this.getStatements());
-        const formChunks = chunk(statementChunks, 400);
+    //     const statementChunks = SRUFile.splitStatements(this.getStatements());
+    //     const formChunks = chunk(statementChunks, 400);
 
-        formChunks.forEach((chunks) => {
-            const forms: K4Form[] = [];
+    //     formChunks.forEach((chunks) => {
+    //         const forms: K4Form[] = [];
 
-            let page = 1;
-            chunks.forEach((chunk: Statement[]) => {
-                const form = new K4Form('K4-2020P4', page++, this.sruInfo?.id || '', this.createDate, chunk);
-                forms.push(form);
-            });
+    //         let page = 1;
+    //         chunks.forEach((chunk: Statement[]) => {
+    //             const form = new K4Form('K4-2020P4', page++, this.sruInfo?.id || '', this.createDate, chunk);
+    //             forms.push(form);
+    //         });
 
-            let formData: string[] = [];
-            forms.forEach((f: K4Form) => {
-                const lines_A = f.generateLinesTypeA();
-                const lines_D = f.generateLinesTypeD();
-                formData = formData.concat(lines_A);
-            });
-            formData.push('#FIL_SLUT');
-            files.push(formData);
-        });
+    //         let formData: string[] = [];
+    //         forms.forEach((f: K4Form) => {
+    //             const lines_A = f.generateLinesTypeA();
+    //             const lines_D = f.generateLinesTypeD();
+    //             formData = formData.concat(lines_A);
+    //         });
+    //         formData.push('#FIL_SLUT');
+    //         files.push(formData);
+    //     });
 
-        return files;
-    }
+    //     return files;
+    // }
 }
