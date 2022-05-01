@@ -1,0 +1,17 @@
+<FlexQueryResponse queryName="Simple 1" type="AF">
+<FlexStatements count="1">
+<FlexStatement accountId="U12345678" fromDate="20150203" toDate="20150206" period="" whenGenerated="20150207 04:04:49">
+<Trades>
+    <Trade currency="USD" assetCategory="FUT" symbol="MCLQ1" description="MCL AUG21" tradeDate="20210714" transactionType="ExchTrade" quantity="10" tradePrice="73.28" proceeds="-73280" ibCommission="-0.77" ibCommissionCurrency="USD" closePrice="73.13" fifoPnlRealized="0" buySell="BUY" cost="73280.77" openCloseIndicator="O" openDateTime="" dateTime="20210714;142534" orderTime="20210714;142533" />
+    <Trade currency="USD" assetCategory="FUT" symbol="MCLQ1" description="MCL AUG21" tradeDate="20210714" transactionType="ExchTrade" quantity="-10" tradePrice="73.14" proceeds="73140" ibCommission="-0.77" ibCommissionCurrency="USD" closePrice="73.13" fifoPnlRealized="-150.54" buySell="SELL" cost="-73280.77" openCloseIndicator="C" openDateTime="" dateTime="20210714;142658" orderTime="20210714;142655" />
+    <Trade currency="USD" assetCategory="FUT" symbol="MCLX1" description="MCL NOV21" tradeDate="20211008" transactionType="ExchTrade" quantity="10" tradePrice="79.69" proceeds="-79690" ibCommission="-0.77" ibCommissionCurrency="USD" closePrice="79.35" fifoPnlRealized="0" buySell="BUY" cost="79690.77" openCloseIndicator="O" openDateTime="" dateTime="20211008;094512" orderTime="20211008;094512" />
+    <Trade currency="USD" assetCategory="FUT" symbol="MCLX1" description="MCL NOV21" tradeDate="20211008" transactionType="ExchTrade" quantity="-10" tradePrice="79.56" proceeds="79560" ibCommission="-0.77" ibCommissionCurrency="USD" closePrice="79.35" fifoPnlRealized="-140.54" buySell="SELL" cost="-79690.77" openCloseIndicator="C" openDateTime="" dateTime="20211008;094635" orderTime="20211008;094531" />
+</Trades>
+<ConversionRates>
+	<ConversionRate reportDate="20210714" fromCurrency="SEK" toCurrency="USD" rate="0.114" />
+	<ConversionRate reportDate="20211008" fromCurrency="SEK" toCurrency="USD" rate="0.11574" />
+</ConversionRates>
+
+</FlexStatement>
+</FlexStatements>
+</FlexQueryResponse>
