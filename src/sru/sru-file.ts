@@ -3,7 +3,7 @@ import format from 'date-fns/format';
 
 import { K4_SEC_TYPE, K4_TYPE, Statement } from '../types/statement';
 import { TradeType } from '../types/trade';
-import { K4Form } from '../types/k4-form';
+import { K4Form, MAX_TYPE_A_STATEMENTS, MAX_TYPE_C_STATEMENTS, MAX_TYPE_D_STATEMENTS } from '../types/k4-form';
 import { logger } from '../logging';
 
 const COMMODITY_FUTURE_SYMBOL_PREFIXES = ['CL', 'GC'];
@@ -77,6 +77,7 @@ const toK4SecType = (trade: TradeType): K4_SEC_TYPE => {
 export const generateBlanketterFileData = (forms: K4Form[]): string[] => {
     let data: string[] = [];
     forms.forEach((f: K4Form) => {
+        // TODO: use generic generateLines() since it knows its type and assume forms are ordered correctly already
         if (f.type === K4_TYPE.TYPE_A) {
             data = data.concat(f.generateLinesTypeA());
         } else if (f.type === K4_TYPE.TYPE_D) {
@@ -117,6 +118,10 @@ export class SRUFile {
     sruInfo?: SRUInfo;
     title = 'SKV-Reporter';
     statementsPerFile: number;
+    maxTypeAStatements: number;
+    maxTypeCStatements: number;
+    maxTypeDStatements: number;
+
     trades: TradeType[];
     fxRates: Map<string, Map<string, number>>;
     createDate = new Date();
@@ -128,12 +133,18 @@ export class SRUFile {
         data?: SRUInfo,
         date = new Date(),
         statementsPerFile = 3500,
+        maxTypeAStatements = MAX_TYPE_A_STATEMENTS,
+        maxTypeCStatements = MAX_TYPE_C_STATEMENTS,
+        maxTypeDStatements = MAX_TYPE_D_STATEMENTS,
     ) {
         this.sruInfo = data;
         this.fxRates = fxRates;
         this.trades = trades;
         this.createDate = date;
         this.statementsPerFile = statementsPerFile;
+        this.maxTypeAStatements = maxTypeAStatements;
+        this.maxTypeCStatements = maxTypeCStatements;
+        this.maxTypeDStatements = maxTypeDStatements;
     }
 
     getStatements(): Statement[] {
@@ -232,7 +243,7 @@ export class SRUFile {
             const statements_d = statements.filter((s: Statement) => s.type === K4_TYPE.TYPE_D);
             logger.info(`Handling ${statements_a.length} TYPE_A, ${statements_d.length} TYPE_D in package`);
             // TYPE_A
-            chunk(statements_a, 9).forEach((statements_a_chunk: Statement[]) => {
+            chunk(statements_a, this.maxTypeAStatements).forEach((statements_a_chunk: Statement[]) => {
                 const form = new K4Form(
                     title,
                     page++,
@@ -244,7 +255,7 @@ export class SRUFile {
                 forms.push(form);
             });
             // TYPE_D
-            chunk(statements_d, 7).forEach((statements_d_chunk: Statement[]) => {
+            chunk(statements_d, this.maxTypeDStatements).forEach((statements_d_chunk: Statement[]) => {
                 const form = new K4Form(
                     title,
                     page++,

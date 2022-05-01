@@ -3,6 +3,9 @@ import { K4_TYPE, Statement } from './statement';
 
 const DATETIME_FORMAT = 'yyyyMMdd HHmmss';
 
+export const MAX_TYPE_A_STATEMENTS = 9;
+export const MAX_TYPE_C_STATEMENTS = 7;
+export const MAX_TYPE_D_STATEMENTS = 7;
 export class K4Form {
     title: string;
     pageNumber: number;
@@ -28,7 +31,12 @@ export class K4Form {
     }
 
     public generateLinesTypeA(): string[] {
-        //TODO: check max TYPA_A statements length now
+        if (this.statements.length === 0) {
+            throw new Error('Form contains no statements');
+        }
+        if (this.statements.length > MAX_TYPE_A_STATEMENTS) {
+            throw new Error(`Form contains too many statements for this K4 type ${this.type}`);
+        }
         const str = format(this.created, DATETIME_FORMAT);
         const lines = [`#BLANKETT ${this.title}`, `#IDENTITET ${this.id} ${str}`, `#UPPGIFT 7014 ${this.pageNumber}`];
 
@@ -41,6 +49,7 @@ export class K4Form {
         this.statements
             .filter((s: Statement) => s.type === K4_TYPE.TYPE_A)
             .forEach((s: Statement) => {
+                // TODO: use i instead of count_typa_a?
                 lines.push(`#UPPGIFT 31${count_type_a}0 ${s.quantity}`);
                 lines.push(`#UPPGIFT 31${count_type_a}1 ${s.symbol}`);
                 lines.push(`#UPPGIFT 31${count_type_a}2 ${s.received}`);
@@ -57,9 +66,6 @@ export class K4Form {
                 costSum += s.paid;
 
                 count_type_a++;
-                if (count_type_a > 9) {
-                    throw new Error('Too many TYPE A records!');
-                }
             });
         lines.push(`#UPPGIFT 3300 ${receivedSum}`);
         lines.push(`#UPPGIFT 3301 ${costSum}`);
@@ -70,7 +76,12 @@ export class K4Form {
     }
 
     public generateLinesTypeD(): string[] {
-        // TODO: check max typeD statements here
+        if (this.statements.length === 0) {
+            throw new Error('Form contains no statements');
+        }
+        if (this.statements.length > MAX_TYPE_D_STATEMENTS) {
+            throw new Error(`Form contains too many statements for this K4 type ${this.type}`);
+        }
         const str = format(this.created, DATETIME_FORMAT);
         const lines = [`#BLANKETT ${this.title}`, `#IDENTITET ${this.id} ${str}`, `#UPPGIFT 7014 ${this.pageNumber}`];
 

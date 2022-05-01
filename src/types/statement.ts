@@ -6,6 +6,7 @@ export enum K4_TYPE {
     TYPE_D = 'TYPE_D',
 }
 
+// TODO: use general SECURIY_TYPE instead
 export enum K4_SEC_TYPE {
     STOCK = 'STOCK',
     OPTION = 'OPTION',

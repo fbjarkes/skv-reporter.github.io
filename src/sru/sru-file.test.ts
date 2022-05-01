@@ -164,16 +164,6 @@ describe('SRU Files', () => {
             expect(statements[0].received).to.equal(598);
         });
 
-        it('should split statements according to K4 form limits', () => {
-            const statements = new Array(19).fill(
-                new Statement(0, 100, 'SPY', 100, 100, 0, K4_TYPE.TYPE_A, '', K4_SEC_TYPE.STOCK),
-            );
-            const chunks = SRUFile.splitStatements(statements);
-            expect(chunks[0]).to.be.of.length(9);
-            expect(chunks[1]).to.be.of.length(9);
-            expect(chunks[2]).to.be.of.length(1);
-        });
-
         it('should not create statements for trades with PnL < 1 SEK', () => {
             const t1 = new TradeType();
             t1.currency = 'USD';
@@ -420,6 +410,25 @@ describe('SRU Files', () => {
             expect(lines).to.have.members(expectedLines);
         });
         it.skip('should do index futures in Type A section');
+        it('should generate 9 (max) TYPE_A statements per K4Form', () => {
+            const statements = new Array(10).fill(
+                new Statement(0, 100, 'SPY', 100, 100, 0, K4_TYPE.TYPE_A, '', K4_SEC_TYPE.STOCK),
+            );
+            const form = new K4Form('K4-2021P4', 1, '19900101-1234', new Date(2021, 0, 1, 14, 30, 0), statements);
+            expect(() => form.generateLinesTypeA()).to.throw(/Form contains too many statements/);
+        });
+        it('should generate 7 (max) TYPE_D statements per K4Form', () => {
+            const statements = new Array(8).fill(
+                new Statement(0, 100, 'MGCM1', 100, 100, 0, K4_TYPE.TYPE_D, '', K4_SEC_TYPE.FUTURE),
+            );
+            const form = new K4Form('K4-2021P4', 1, '19900101-1234', new Date(2021, 0, 1, 14, 30, 0), statements);
+            expect(() => form.generateLinesTypeD()).to.throw(/Form contains too many statements/);
+        });
+        it('should throw error if generating empty form', () => {
+            const form = new K4Form('K4-2021P4', 1, '19900101-1234', new Date(2021, 0, 1, 14, 30, 0), []);
+            expect(() => form.generateLinesTypeA()).to.throw(/Form contains no statements/);
+            expect(() => form.generateLinesTypeD()).to.throw(/Form contains no statements/);
+        });
     });
 
     describe('getSRUPackage', () => {
@@ -451,6 +460,7 @@ describe('SRU Files', () => {
             expect(packages[0].totals[1].totalLoss).to.equal(0);
             expect(packages[0].totals[1].totalProfit).to.equal(100 * 10);
         });
+
         it('should generate blanketter.sru data for each SRUPackage', () => {
             const t1 = _createTrade('SPY', 900, 1001, 10, 100, 100, 'STK', '2021-01-11');
             const t2 = _createFutTrade('MNQM1', 900, 1001, 1, 100);
