@@ -1,9 +1,9 @@
 import { chunk, sumBy } from 'lodash';
+import format from 'date-fns/format';
+
 import { K4_SEC_TYPE, K4_TYPE, Statement } from '../types/statement';
 import { TradeType } from '../types/trade';
-//import { logger } from '../logging'; // TODO: only import in non-browser environment
 import { K4Form } from '../types/k4-form';
-import format from 'date-fns/format';
 import { logger } from '../logging';
 
 const COMMODITY_FUTURE_SYMBOL_PREFIXES = ['CL', 'GC'];
@@ -24,12 +24,6 @@ export type SRUPackage = {
     forms: K4Form[];
     statements: Statement[];
     totals: K4TypeTotals[];
-    // typeA_totalProfit?: number; // 7.4
-    // typeA_totalLoss?: number; // 8.3
-    // typeC_totalProfit?: number; // 7.2
-    // typeC_totalLoss?: number; // 8.1
-    // typeD_totalProfit?: number; // 7.5
-    // typeD_totalLoss?: number; // 8.4
 };
 
 export type K4TypeTotals = {
@@ -80,7 +74,7 @@ const toK4SecType = (trade: TradeType): K4_SEC_TYPE => {
 };
 
 // --- public functions ---
-export const generateBlanketterFile = (forms: K4Form[]): string[] => {
+export const generateBlanketterFileData = (forms: K4Form[]): string[] => {
     let data: string[] = [];
     forms.forEach((f: K4Form) => {
         if (f.type === K4_TYPE.TYPE_A) {
@@ -177,21 +171,21 @@ export class SRUFile {
             );
 
             if (trade.openClose === 'C;O') {
-                logger.info(`Found C;O statement: ${statement}`);
+                //logger.info(`Found C;O statement: ${statement}`);
             }
             if (Math.abs(pnl) < 1) {
                 logger.info(`Skipping trade with < 1SEK: ${statement.toString()}`);
                 //console.log(`Skipping trade with < 1SEK: ${statement.toString()}`);
             } else {
-                //logger.info(`Adding: ${statement.toString()}`);
-                console.log(`Adding: ${statement.toString()}`);
+                logger.info(`Adding: ${statement.toString()}`);
+                //console.log(`Adding: ${statement.toString()}`);
                 statements.push(statement);
             }
         });
         return statements;
     }
 
-    getInfoData(): string[] {
+    getInfoFileData(): string[] {
         return [
             '#DATABESKRIVNING_START',
             '#PRODUKT SRU',
@@ -228,7 +222,7 @@ export class SRUFile {
             let page = 1;
             const statements_a = statements.filter((s: Statement) => s.type === K4_TYPE.TYPE_A);
             const statements_d = statements.filter((s: Statement) => s.type === K4_TYPE.TYPE_D);
-            console.log(`Handling ${statements_a.length} TYPE_A, ${statements_d.length} TYPE_D`);
+            logger.info(`Handling ${statements_a.length} TYPE_A, ${statements_d.length} TYPE_D`);
             // TYPE_A
             chunk(statements_a, 9).forEach((statements_a_chunk: Statement[]) => {
                 const form = new K4Form(

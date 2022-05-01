@@ -1,3 +1,4 @@
+// export type K4_TYPE = 'TYPE_A' | 'TYPE_B' | 'TYPE_C' | 'TYPE_D';
 export enum K4_TYPE {
     TYPE_A = 'TYPE_A',
     TYPE_B = 'TYPE_B',
@@ -14,7 +15,7 @@ export enum K4_SEC_TYPE {
 
 export class Statement {
     id: number;
-    symbol: string; // TODO: max 80 chars
+    symbol: string;
     quantity = 0;
     received: number;
     paid: number;
