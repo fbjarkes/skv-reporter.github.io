@@ -22,6 +22,7 @@ export type TradeStats = {
     pnl: number;
     avgWin: number;
     avgLoss: number;
+    commissions: number;
 };
 
 export const filterTrades = (t: TradeType, filters: TradeFilters): boolean => {
@@ -74,6 +75,7 @@ export const calculateStats = (trades: TradeType[]): TradeStats => {
         avgLoss: 0,
         totalWin: 0,
         totalLoss: 0,
+        commissions: 0,
     };
     trades.filter(_usdOnly).forEach((t) => {
         if (t.pnl > 0) {
@@ -84,6 +86,7 @@ export const calculateStats = (trades: TradeType[]): TradeStats => {
             stats.totalLoss += t.pnl;
         }
         stats.pnl += t.pnl;
+        stats.commissions += t.commission;
     });
 
     stats.winRate = (stats.winners / (stats.losers + stats.winners)) * 100;
