@@ -6,9 +6,9 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
-import defaultTheme, { myTheme } from '../utils/theme';
+import defaultTheme from '../utils/theme';
 import TradesProvider from '../contexts/TradesContext';
-import Header from '../components/header';
+import Header from '../components/Header';
 
 const App = ({ Component, pageProps }: AppProps): React.ReactNode => {
     const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');

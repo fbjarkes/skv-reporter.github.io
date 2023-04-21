@@ -1,60 +1,84 @@
 import { createTheme } from '@mui/material/styles';
 
-export const myTheme = createTheme({
-    typography: {
-        fontFamily: 'Manrope, sans-serif',
-        fontWeightRegular: 500,
-        button: {
-            fontSize: '14px',
-            textTransform: 'none',
-        },
+// Light theme colors
+const lightColors = {
+    primary: {
+        main: '#1976d2',
     },
+    secondary: {
+        main: '#dc004e',
+    },
+    background: {
+        default: '#fff',
+        paper: '#f4f6f8',
+    },
+    text: {
+        primary: '#202124',
+        secondary: '#5f6368',
+    },
+    button: {
+        default: '#1976d2',
+        hover: '#1565c0',
+    },
+};
+
+// Dark theme colors
+const darkColors = {
+    primary: {
+        main: '#90caf9',
+    },
+    secondary: {
+        main: '#f48fb1',
+    },
+    background: {
+        default: '#121212',
+        paper: '#1e1e1e',
+    },
+    text: {
+        primary: '#f5f5f5',
+        secondary: '#bdbdbd',
+    },
+    button: {
+        default: '#90caf9',
+        hover: '#64b5f6',
+    },
+};
+
+// Define the themes
+const lightTheme = createTheme({
     palette: {
-        //mode: prefersDarkMode ? 'dark' : 'light',
         mode: 'light',
-        // primary: {
-        //     light: '#E4F5FF',
-        //     main: '#8BEAFF',
-        //     dark: '#1D4DC9',
-        //     contrastText: '#000',
-        // },
-        // secondary: {
-        //     main: '#DD3E76',
-        //     dark: '#750035',
-        //     contrastText: '#E4F5FF',
-        // },
-        // warning: {
-        //     main: '#FAC265',
-        //     dark: '#D18641',
-        //     contrastText: '#E4F5FF',
-        // },
-        // success: {
-        //     main: '#51F39C',
-        //     contrastText: '#E4F5FF',
-        // },
-        // error: {
-        //     main: '#DD3E76',
-        //     contrastText: '#8BEAFF',
-        // },
-        // info: {
-        //     main: '#1D4DC9',
-        //     contrastText: '#E4F5FF',
-        // },
-        // background: {
-        //     paper: '#34343E',
-        //     default: '#101017',
-        // },
-        // text: {
-        //     primary: 'rgba(139, 234, 255, 0.9)',
-        // },
+        ...lightColors,
+    },
+    typography: {
+        //fontFamily: 'Manrope, sans-serif',
+        //fontWeightRegular: 500,
+        button: {
+            //fontSize: '14px',
+            //textTransform: 'none',
+            margin: '0 1px 0 1px',
+        },
     },
 });
 
-const defaultTheme = (prefersDarkMode: boolean) =>
-    createTheme({
-        palette: {
-            mode: prefersDarkMode ? 'dark' : 'light',
+const darkTheme = createTheme({
+    palette: {
+        mode: 'dark',
+        ...darkColors,
+    },
+    typography: {
+        //fontFamily: 'Manrope, sans-serif',
+        //fontWeightRegular: 500,
+        button: {
+            //fontSize: '14px',
+            //textTransform: 'none',
+            margin: '0 1px 0 1px',
         },
-    });
+    },
+});
+
+const defaultTheme = (prefersDarkMode: boolean) => {
+    return prefersDarkMode ? darkTheme : lightTheme;
+};
 
 export default defaultTheme;
