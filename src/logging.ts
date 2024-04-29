@@ -1,5 +1,5 @@
 import { createLogger, format, transports } from 'winston';
-import 'dotenv/config';
+//import 'dotenv/config'; // TODO: only import in non-browser environment
 
 export function TraceLog(): any {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
@@ -12,7 +12,7 @@ export function TraceLog(): any {
     };
 }
 
-export const logger = createLogger({    
+export const logger = createLogger({
     level: process.env.LOG_LEVEL?.toLowerCase() ?? 'debug',
     format: format.combine(
         format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
@@ -25,5 +25,5 @@ export const logger = createLogger({
                 }`,
         ),
     ),
-    transports: [new transports.Console()],
+    transports: [new transports.Console(), new transports.File({ filename: 'debug.log', level: 'debug' })],
 });
