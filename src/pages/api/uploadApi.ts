@@ -36,6 +36,7 @@ const uploadApi = async (req: NextApiRequestWithFormData, res: NextApiResponse):
         const trades = flexParser.getClosingTrades();
         const sruFiles = new SRUFile(flexParser.getConversionRates(), trades);
         const statements = sruFiles.getStatements();
+        //TODO: save conversionRates?
         res.statusCode = 201;
         res.json({ trades: trades, statements: statements });
         res.end();

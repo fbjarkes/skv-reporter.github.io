@@ -101,6 +101,7 @@ export const totalsFileData = (totals: K4TypeTotals[]): string[] => {
             `Total received: ${t.totalReceived}`,
             `Total pnl: ${t.totalPnl}`,
             `Total statements: ${t.totalStatements}`,
+            `Total number K4s: N/A`,
             ``,
         ];
     };
@@ -114,13 +115,13 @@ export const totalsFileData = (totals: K4TypeTotals[]): string[] => {
         if (t.type === K4_TYPE.TYPE_D) {
             return [
                 `Add and sum total profit '${t.totalProfit}' to 7.5`,
-                `Add and sum (positive) total loss '${Math.abs(t.totalLoss)}' to 8.3`,
+                `Add and sum (positive) total loss '${Math.abs(t.totalLoss)}' to 8.4`,
             ];
         }
         // TODO: TYPE_C
         return [];
     };
-    let data = totals.map((t) => {
+    const data = totals.map((t) => {
         return [..._add_totals(t), ..._add_instructions(t), ''];
     });
     return data.flat();
@@ -167,7 +168,7 @@ export class SRUFile {
         trades: TradeType[],
         data?: SRUInfo,
         date = new Date(),
-        statementsPerFile = 3500,
+        statementsPerFile = 3500, // approx. ~5MB
         maxTypeAStatements = MAX_TYPE_A_STATEMENTS,
         maxTypeCStatements = MAX_TYPE_C_STATEMENTS,
         maxTypeDStatements = MAX_TYPE_D_STATEMENTS,
